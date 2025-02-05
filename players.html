@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Players Info & Stats</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <img class="flag-icon" src="https://flagcdn.com/32x24/${player.country.toLowerCase()}.png">
   <style>
     /* Base Styles */
     body {
@@ -220,43 +219,48 @@
   </div>
   
   <script>
-    
     let currentPage = 1;
     const cardsPerPage = 12;
 
-    // Load players and populate cards
+    // Helper function to convert flag emoji to ISO country code.
+    function emojiToCountryCode(emoji) {
+      // Each flag emoji is made of two characters.
+      return [...emoji].map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
+    }
+
+    // Load players and populate cards from localStorage.
     function loadPlayers() {
       const data = JSON.parse(localStorage.getItem('eloData')) || [];
       const section = document.getElementById('players-section');
       const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
 
-      // Filter players based on search query (if any)
+      // Filter players based on search query.
       let filteredData = data.filter(player =>
         player.name.toLowerCase().includes(searchQuery)
       );
 
-      // Sort players by rating descending
+      // Sort players by rating descending.
       filteredData.sort((a, b) => b.rating - a.rating);
 
-      // Pagination
+      // Pagination.
       const totalPages = Math.ceil(filteredData.length / cardsPerPage);
       if (currentPage > totalPages) currentPage = totalPages || 1;
       const start = (currentPage - 1) * cardsPerPage;
       const playersToShow = filteredData.slice(start, start + cardsPerPage);
 
-      // Create category containers (GM, IM, NM)
+      // Create category containers (GM, IM, NM).
       const categories = {
         GM: createCategory('Grandmasters (GM)'),
         IM: createCategory('International Masters (IM)'),
         NM: createCategory('National Masters (NM)')
       };
 
-      // Clear any previous content from categories
+      // Clear previous content.
       Object.values(categories).forEach(category => {
         category.querySelector('.player-cards').innerHTML = '';
       });
 
-      // Create cards for players to show (grouped by title)
+      // Create cards for players, grouped by title.
       playersToShow.forEach(player => {
         const card = createPlayerCard(player);
         card.addEventListener('click', () => showPlayerModal(player));
@@ -265,7 +269,7 @@
         }
       });
 
-      // Clear section and append only non-empty categories
+      // Append only non-empty categories.
       section.innerHTML = '';
       Object.values(categories).forEach(category => {
         if (category.querySelector('.player-cards').children.length > 0) {
@@ -290,12 +294,11 @@
       const card = document.createElement('div');
       card.className = 'player-card';
 
-      // Calculate a simple progress percentage for rating (optional)
-      const maxElo = 3000;
-      const eloPercentage = (player.rating / maxElo) * 100;
-
+      // Use the helper function to get the correct country code.
+      const countryCode = emojiToCountryCode(player.country);
+      
       card.innerHTML = `
-        <img class="flag-icon" src="https://flagcdn.com/32x24/${player.country.toLowerCase()}.png" onerror="this.style.display='none'">
+        <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" onerror="this.style.display='none'">
         <h3 style="font-size: 1em; margin: 5px 0;">${player.name}</h3>
         <span class="player-title title-${player.title.toLowerCase()}">${player.title}</span>
         <div class="card-stats">
@@ -308,17 +311,17 @@
     }
 
     function showPlayerModal(player) {
+      const countryCode = emojiToCountryCode(player.country);
       const modalHTML = `
         <div class="modal-overlay" onclick="closeModal()"></div>
         <div class="player-modal">
           <div style="display:flex; align-items:center; gap:10px;">
-            <img class="flag-icon" src="https://flagcdn.com/32x24/${player.country.toLowerCase()}.png" alt="${player.country} flag">
-            <h2 style="margin:0;">${player.name} (${player.country.toUpperCase()})</h2>
+            <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag">
+            <h2 style="margin:0;">${player.name} (${player.country})</h2>
           </div>
           <div class="player-title title-${player.title.toLowerCase()}" style="margin-top:10px; display:inline-block;">
             ${player.title}
           </div>
-          
           <div class="detailed-stats">
             <div class="stat-row">
               <span>Current Rating:</span>
@@ -356,7 +359,7 @@
       document.querySelector('.player-modal')?.remove();
     }
 
-    // Render pagination controls
+    // Render pagination controls.
     function renderPagination(totalPages) {
       const container = document.getElementById('pagination-controls');
       container.innerHTML = '';
@@ -391,24 +394,31 @@
       container.appendChild(nextButton);
     }
 
-    // Dark mode toggle
+    // Dark mode toggle.
     document.getElementById('toggle-dark').addEventListener('click', () => {
       document.body.classList.toggle('dark');
       localStorage.setItem('darkMode', document.body.classList.contains('dark') ? 'enabled' : 'disabled');
     });
 
-    // Event listener for search input
+    // Event listener for search input.
     document.getElementById('search-input').addEventListener('input', () => {
-      currentPage = 1; // Reset to first page on new search
+      currentPage = 1; // Reset to first page on new search.
       loadPlayers();
     });
 
-    // Set dark mode on load if enabled
+    // Listen for storage events so that if index.html updates the eloData, we refresh the players list.
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'eloData') {
+        loadPlayers();
+      }
+    });
+
+    // Set dark mode on load if enabled.
     if (localStorage.getItem('darkMode') === 'enabled') {
       document.body.classList.add('dark');
     }
 
-    // Initial load of players when page loads
+    // Initial load of players when page loads.
     loadPlayers();
   </script>
 </body>
