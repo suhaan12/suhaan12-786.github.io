@@ -2,298 +2,204 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chess ELO Tracker</title>
   <style>
-    :root {
-      --bg-color: #ffffff;
-      --text-color: #333333;
-      --primary-color: #2c3e50;
-      --secondary-color: #3498db;
-      --border-color: #dddddd;
-      --card-bg: #f8f9fa;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-color: #1a1a1a;
-        --text-color: #ffffff;
-        --primary-color: #34495e;
-        --secondary-color: #2980b9;
-        --border-color: #2c3e50;
-        --card-bg: #2c3e50;
-      }
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      transition: all 0.3s ease;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .nav {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 30px;
-      padding: 15px;
-      background-color: var(--primary-color);
-      border-radius: 8px;
-    }
-
-    .nav-button {
-      padding: 10px 20px;
-      background-color: var(--secondary-color);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .nav-button:hover {
-      transform: translateY(-2px);
-    }
-
-    .card {
-      background-color: var(--card-bg);
-      border-radius: 10px;
-      padding: 25px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .input-group {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    select, button {
-      padding: 10px 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 5px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-size: 16px;
-    }
-
-    button {
-      background-color: var(--secondary-color);
-      color: white;
-      cursor: pointer;
-    }
-
-    .elo-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    .elo-table th, .elo-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .elo-table th {
-      background-color: var(--primary-color);
-      color: white;
-    }
-
-    .elo-table tr:hover {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    .player-title {
-      font-size: 0.9em;
-      color: #7f8c8d;
-    }
-
-    .flag {
-      font-size: 1.2em;
-      margin-left: 8px;
-    }
-
-    .stats-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .stats-table td {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .page {
-      display: none;
-    }
-
-    .active-page {
-      display: block;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .input-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+    .elo-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .elo-table th, .elo-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .elo-table th { background-color: #f5f5f5; }
+    .player-title { font-size: 0.9em; color: #666; }
+    .flag { font-size: 1.2em; }
+    select, button { margin: 5px; padding: 8px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="nav">
-      <button class="nav-button" onclick="showPage('ratings')">ELO Ratings</button>
-      <button class="nav-button" onclick="showPage('stats')">Player Stats</button>
+    <h1>Chess ELO Tracker</h1>
+    
+    <div class="input-section">
+      <h3>Record Game Result:</h3>
+      <select id="player1"></select>
+      vs 
+      <select id="player2"></select>
+      <select id="result">
+        <option value="1-0">White Wins</option>
+        <option value="0-1">Black Wins</option>
+        <option value="½-½">Draw</option>
+      </select>
+      <button onclick="recordGame()">Submit Result</button>
     </div>
 
-    <!-- Ratings Page -->
-    <div id="ratings-page" class="page active-page">
-      <div class="card">
-        <h2>Record Game Result</h2>
-        <div class="input-group">
-          <select id="player1"></select>
-          <span>vs</span>
-          <select id="player2"></select>
-          <select id="result">
-            <option value="1-0">White Wins</option>
-            <option value="0-1">Black Wins</option>
-            <option value="½-½">Draw</option>
-          </select>
-          <button onclick="recordGame()">Submit Result</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Current Ratings</h2>
-        <table class="elo-table">
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Player</th>
-              <th>Title</th>
-              <th>Rating</th>
-              <th>Games</th>
-              <th>Country</th>
-            </tr>
-          </thead>
-          <tbody id="ratings-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Stats Page -->
-    <div id="stats-page" class="page">
-      <div class="card">
-        <h2>Player Statistics</h2>
-        <table class="elo-table">
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>Wins</th>
-              <th>Losses</th>
-              <th>Draws</th>
-              <th>Win Rate</th>
-              <th>Total Games</th>
-            </tr>
-          </thead>
-          <tbody id="stats-body"></tbody>
-        </table>
-      </div>
-    </div>
+    <h2>Current Ratings</h2>
+    <table class="elo-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Title</th>
+          <th>ELO Rating</th>
+          <th>Games Played</th>
+          <th>Country</th>
+        </tr>
+      </thead>
+      <tbody id="ratings-body"></tbody>
+    </table>
   </div>
 
   <script>
-    // Updated player structure with stats
-    const initialPlayers = [
-      // Grandmasters
-      {name: "Hano Kafu", country: "🇯🇵", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, losses: 0, draws: 0},
-      // ... other players with same structure ...
+    // List of players with realistic initial ratings and a gamesPlayed counter.
+    // Adjusted ratings:
+    // - Grandmasters (GM) start at 2700,
+    // - International Masters (IM) at 2500,
+    // - National Masters (NM) at 2300.
+    const players = [
+      // GRANDMASTERS [GM]
+      {name: "Hano Kafu", country: "🇯🇵", title: "GM", rating: 2700, gamesPlayed: 0},
+      {name: "Jean-Pascal Cuvier", country: "🇫🇷", title: "GM", rating: 2700, gamesPlayed: 0},
+      {name: "Lucas Moretti", country: "🇪🇸", title: "GM", rating: 2700, gamesPlayed: 0},
+      {name: "Light Yagami", country: "🇯🇵", title: "GM", rating: 2700, gamesPlayed: 0},
+
+      // INTERNATIONAL MASTERS [IM]
+      {name: "Elias Norberg", country: "🇸🇪", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Viktor Dragunov", country: "🇷🇺", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Alaric Varga", country: "🇭🇺", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Finn O’Callaghan", country: "🇮🇪", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Rafael Monteiro", country: "🇧🇷", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Emil Kovalenko", country: "🇺🇦", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Hugo Lancaster", country: "🇬🇧", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Chandra Singh", country: "🇮🇳", title: "IM", rating: 2500, gamesPlayed: 0},
+      {name: "Blake Barnes", country: "🇺🇸", title: "IM", rating: 2500, gamesPlayed: 0},
+
+      // NATIONAL MASTERS [NM]
+      {name: "Willem Vries", country: "🇳🇱", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Tobias Falkenberg", country: "🇩🇪", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Ivan Stanimirović", country: "🇷🇸", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Naeem Rahmani", country: "🇵🇰", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Marcel Fontaine", country: "🇧🇪", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Zacharias Petrou", country: "🇬🇷", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Timur Baysangurov", country: "🇰🇿", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Felix Himmelsbach", country: "🇦🇹", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Joaquim Ferrer", country: "🇵🇹", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Etienne Duval", country: "🇫🇷", title: "NM", rating: 2300, gamesPlayed: 0},
+      {name: "Omar Al-Zubair", country: "🇸🇦", title: "NM", rating: 2300, gamesPlayed: 0}
     ];
 
-    // Initialize or load data
-    function initializeData() {
-      if (!localStorage.getItem('eloData')) {
-        localStorage.setItem('eloData', JSON.stringify(initialPlayers));
-      } else {
-        // Migrate existing data to include stats
-        const existingData = JSON.parse(localStorage.getItem('eloData'));
-        if (!existingData[0].wins) {
-          const migratedData = existingData.map(p => ({
-            ...p,
-            wins: 0,
-            losses: 0,
-            draws: 0
-          }));
-          localStorage.setItem('eloData', JSON.stringify(migratedData));
-        }
-      }
+    // Initialize localStorage if not already present.
+    if (!localStorage.getItem('eloData')) {
+      localStorage.setItem('eloData', JSON.stringify(players));
     }
 
+    // The expected score function uses the standard ELO formula.
     function getExpectedScore(ratingA, ratingB) {
       return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
     }
 
+    // Enhanced rating update function with dynamic K-factor.
     function updateRatings(playerA, playerB, result) {
-      // ... existing rating calculation code ...
-
-      // Update stats
-      if (result === '1-0') {
-        playerA.wins++;
-        playerB.losses++;
-      } else if (result === '0-1') {
-        playerA.losses++;
-        playerB.wins++;
-      } else {
-        playerA.draws++;
-        playerB.draws++;
+      // Dynamic K-factor based on the player's games played.
+      function getKFactor(player) {
+        // For new players, use K=40; once they have played at least 30 games, adjust based on rating.
+        if (player.gamesPlayed < 30) return 40;
+        else if (player.rating >= 2400) return 10;
+        else return 20;
       }
+
+      const kA = getKFactor(playerA);
+      const kB = getKFactor(playerB);
+
+      const expectedA = getExpectedScore(playerA.rating, playerB.rating);
+      const expectedB = 1 - expectedA;
+      
+      let actualA, actualB;
+      if (result === '1-0') {
+        actualA = 1;
+        actualB = 0;
+      } else if (result === '0-1') {
+        actualA = 0;
+        actualB = 1;
+      } else {
+        actualA = 0.5;
+        actualB = 0.5;
+      }
+      
+      // Update each player's rating using their individual K-factor.
+      playerA.rating += kA * (actualA - expectedA);
+      playerB.rating += kB * (actualB - expectedB);
+      
+      // Increment games played.
+      playerA.gamesPlayed++;
+      playerB.gamesPlayed++;
     }
 
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active-page');
+    // Populate the player selection dropdowns.
+    function populatePlayers() {
+      const select1 = document.getElementById('player1');
+      const select2 = document.getElementById('player2');
+      const data = JSON.parse(localStorage.getItem('eloData'));
+      
+      data.forEach(player => {
+        const option1 = document.createElement('option');
+        option1.value = player.name;
+        option1.text = `${player.name} ${player.country}`;
+        select1.add(option1);
+        
+        const option2 = document.createElement('option');
+        option2.value = player.name;
+        option2.text = `${player.name} ${player.country}`;
+        select2.add(option2);
       });
-      document.getElementById(`${pageId}-page`).classList.add('active-page');
     }
 
-    function updateStatsTable() {
-      const tbody = document.getElementById('stats-body');
+    // Record a game result, update ratings, and refresh the ratings table.
+    function recordGame() {
+      const player1Name = document.getElementById('player1').value;
+      const player2Name = document.getElementById('player2').value;
+      const result = document.getElementById('result').value;
+      
+      if (player1Name === player2Name) {
+        alert("Please select two different players.");
+        return;
+      }
+      
+      let data = JSON.parse(localStorage.getItem('eloData'));
+      const p1 = data.find(p => p.name === player1Name);
+      const p2 = data.find(p => p.name === player2Name);
+      
+      if (!p1 || !p2) {
+        alert("Player not found!");
+        return;
+      }
+      
+      updateRatings(p1, p2, result);
+      localStorage.setItem('eloData', JSON.stringify(data));
+      updateRatingsTable();
+    }
+
+    // Update the table displaying the ratings, games played, etc.
+    function updateRatingsTable() {
+      const tbody = document.getElementById('ratings-body');
       tbody.innerHTML = '';
       
       const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => b.rating - a.rating);
       
-      data.forEach(player => {
+      data.forEach((player, index) => {
         const row = tbody.insertRow();
-        const totalGames = player.wins + player.losses + player.draws;
-        const winRate = totalGames > 0 ? 
-          ((player.wins / totalGames) * 100).toFixed(1) + '%' : 'N/A';
-
         row.innerHTML = `
+          <td>${index + 1}</td>
           <td>${player.name} <span class="flag">${player.country}</span></td>
-          <td>${player.wins}</td>
-          <td>${player.losses}</td>
-          <td>${player.draws}</td>
-          <td>${winRate}</td>
-          <td>${totalGames}</td>
+          <td><span class="player-title">${player.title}</span></td>
+          <td>${Math.round(player.rating)}</td>
+          <td>${player.gamesPlayed}</td>
+          <td>${player.country}</td>
         `;
       });
     }
 
-    // Modified recordGame function
-    function recordGame() {
-      // ... existing game recording code ...
-      updateRatingsTable();
-      updateStatsTable();
-    }
-
-    // Initialize the app
-    initializeData();
+    // Initial setup
     populatePlayers();
     updateRatingsTable();
-    updateStatsTable();
   </script>
 </body>
 </html>
