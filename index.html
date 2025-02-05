@@ -264,7 +264,30 @@
     }
 
     function updateRatings(playerA, playerB, result) {
-      // ... existing rating calculation code ...
+      function getKFactor(player) {
+        if (player.gamesPlayed < 30) return 40;
+        else if (player.rating >= 2400) return 10;
+        else return 20;
+      }
+      const kA = getKFactor(playerA);
+      const kB = getKFactor(playerB);
+      const expectedA = getExpectedScore(playerA.rating, playerB.rating);
+      const expectedB = 1 - expectedA;
+      
+      let actualA, actualB;
+      if (result === '1-0') {
+        actualA = 1;
+        actualB = 0;
+      } else if (result === '0-1') {
+        actualA = 0;
+        actualB = 1;
+      } else {
+        actualA = 0.5;
+        actualB = 0.5;
+      }
+      
+      playerA.rating += kA * (actualA - expectedA);
+      playerB.rating += kB * (actualB - expectedB);
 
       // Update stats
       if (result === '1-0') {
@@ -310,12 +333,50 @@
     }
 
     // Modified recordGame function
+    // Record a game result, update ratings and stats, then refresh the ratings table.
     function recordGame() {
-      // ... existing game recording code ...
+      const player1Name = document.getElementById('player1').value;
+      const player2Name = document.getElementById('player2').value;
+      const result = document.getElementById('result').value;
+      
+      if (player1Name === player2Name) {
+        alert("Please select two different players.");
+        return;
+      }
+      
+      let data = JSON.parse(localStorage.getItem('eloData'));
+      const p1 = data.find(p => p.name === player1Name);
+      const p2 = data.find(p => p.name === player2Name);
+      
+      if (!p1 || !p2) {
+        alert("Player not found!");
+        return;
+      }
+      
+      updateRatings(p1, p2, result);
+      localStorage.setItem('eloData', JSON.stringify(data));
       updateRatingsTable();
-      updateStatsTable();
     }
 
+    // Update the ratings table.
+    function updateRatingsTable() {
+      const tbody = document.getElementById('ratings-body');
+      tbody.innerHTML = '';
+      
+      const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => b.rating - a.rating);
+      
+      data.forEach((player, index) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${player.name} <span class="flag">${player.country}</span></td>
+          <td><span class="player-title">${player.title}</span></td>
+          <td>${Math.round(player.rating)}</td>
+          <td>${player.gamesPlayed}</td>
+          <td>${player.country}</td>
+        `;
+      });
+    }
     // Initialize the app
     initializeData();
     populatePlayers();
