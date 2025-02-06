@@ -113,9 +113,11 @@
     <header>
       <h1>Chess ELO Tracker</h1>
       <div>
-        <button id="toggle-dark">Toggle Dark Mode</button>
-        <a href="players.html" style="margin-left: 20px;">Players Info</a>
-      </div>
+  <input type="password" id="password-input" placeholder="Enter password to modify ELO">
+  <button onclick="unlockELOModification()">Unlock</button>
+  <button id="toggle-dark">Toggle Dark Mode</button>
+  <a href="players.html" style="margin-left: 20px;">Players Info</a>
+</div>
     </header>
     
     <div class="input-section">
@@ -148,6 +150,21 @@
   </div>
 
   <script>
+    const correctPassword = "abc123"; // Set your password here
+
+function unlockELOModification() {
+  const passwordInput = document.getElementById('password-input').value;
+  if (passwordInput === correctPassword) {
+    alert("ELO modification unlocked!");
+    document.getElementById('player1').disabled = false;
+    document.getElementById('player2').disabled = false;
+    document.getElementById('result').disabled = false;
+    document.querySelector('button[onclick="recordGame()"]').disabled = false;
+  } else {
+    alert("Incorrect password!");
+  }
+}
+
     // Player list with initial ratings and extended stats (wins, draws, losses, games played).
     const players = [
       // GRANDMASTERS [GM]
@@ -274,7 +291,7 @@
       const result = document.getElementById('result').value;
       
       if (player1Name === player2Name) {
-        alert("Please select two different players.");
+        alert("Please select different players.");
         return;
       }
       
@@ -297,19 +314,7 @@
       const tbody = document.getElementById('ratings-body');
       tbody.innerHTML = '';
       
-      const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => {
-        const titleOrder = {GM: 0, IM: 1, NM: 2};
-        // Sort by title priority first
-        if (titleOrder[a.title] !== titleOrder[b.title]) {
-          return titleOrder[a.title] - titleOrder[b.title];
-        }
-        // Then by ELO descending
-        if (b.rating !== a.rating) {
-          return b.rating - a.rating;
-        }
-        // Finally alphabetically if ELO is equal
-        return a.name.localeCompare(b.name);
-      });
+      const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => b.rating - a.rating);
       
       data.forEach((player, index) => {
         const countryCode = getCountryCode(player.country);
@@ -334,11 +339,18 @@
     if (localStorage.getItem('darkMode') === 'enabled') {
       document.body.classList.add('dark');
     }
-
+    if (!localStorage.getItem('eloData')) {
+  localStorage.setItem('eloData', JSON.stringify(players));
+}
     // Initial population of players and ratings table.
     populatePlayers();
     updateRatingsTable();
-    
+    document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('player1').disabled = true;
+  document.getElementById('player2').disabled = true;
+  document.getElementById('result').disabled = true;
+  document.querySelector('button[onclick="recordGame()"]').disabled = true;
+});
   </script>
 </body>
 </html>
