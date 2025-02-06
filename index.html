@@ -322,6 +322,9 @@
     if (localStorage.getItem('darkMode') === 'enabled') {
       document.body.classList.add('dark');
     }
+    localStorage.removeItem('eloData');
+location.reload();
+
 
     // Initial population of players and ratings table.
     populatePlayers();
