@@ -297,7 +297,19 @@
       const tbody = document.getElementById('ratings-body');
       tbody.innerHTML = '';
       
-      const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => b.rating - a.rating);
+      const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => {
+        const titleOrder = {GM: 0, IM: 1, NM: 2};
+        // Sort by title priority first
+        if (titleOrder[a.title] !== titleOrder[b.title]) {
+          return titleOrder[a.title] - titleOrder[b.title];
+        }
+        // Then by ELO descending
+        if (b.rating !== a.rating) {
+          return b.rating - a.rating;
+        }
+        // Finally alphabetically if ELO is equal
+        return a.name.localeCompare(b.name);
+      });
       
       data.forEach((player, index) => {
         const countryCode = getCountryCode(player.country);
