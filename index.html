@@ -91,6 +91,19 @@
     a:hover {
       text-decoration: underline;
     }
+    .player-title {
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  .player-title.GM { background-color: #FFD700; color: #000; }
+  .player-title.IM { background-color: #C0C0C0; color: #000; }
+  .player-title.NM { background-color: #CD7F32; color: #fff; }
+
+  /* Dark mode adjustments */
+  body.dark .player-title.GM { background-color: #FFD700; color: #121212; }
+  body.dark .player-title.IM { background-color: #0077b6; color: #ffffff; }
+  body.dark .player-title.NM { background-color: #B08D57; color: #fff; }
   </style>
 </head>
 <body>
@@ -275,13 +288,14 @@
       data.forEach((player, index) => {
         const row = tbody.insertRow();
         row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${player.name} <span class="flag">${player.country}</span></td>
-          <td><span class="player-title">${player.title}</span></td>
-          <td>${Math.round(player.rating)}</td>
-          <td>${player.gamesPlayed}</td>
-          <td>${player.country}</td>
-        `;
+        <td>${index + 1}</td>
+        <td>${player.name} <span class="flag">${player.country}</span></td>
+        <td><span class="player-title ${player.title}">${player.title}</span></td>
+        <td>${Math.round(player.rating)}</td>
+        <td>${player.gamesPlayed}</td>
+        <td>${player.country}</td>
+      `;
+
       });
     }
 
