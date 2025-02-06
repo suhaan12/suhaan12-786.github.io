@@ -227,6 +227,14 @@
       // Each flag emoji is made of two characters.
       return [...emoji].map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
     }
+    function getCountryCode(country) {
+  // If the country value is already a 2-letter code, return it (in lowercase)
+  if (/^[A-Za-z]{2}$/.test(country)) {
+    return country.toLowerCase();
+  }
+  // Otherwise, assume it's an emoji and convert it.
+  return emojiToCountryCode(country);
+}
 
     // Load players and populate cards from localStorage.
     function loadPlayers() {
@@ -291,68 +299,67 @@
     }
 
     function createPlayerCard(player) {
-      const card = document.createElement('div');
-      card.className = 'player-card';
+  const card = document.createElement('div');
+  card.className = 'player-card';
 
-      // Use the helper function to get the correct country code.
-      const countryCode = emojiToCountryCode(player.country);
-      
-      card.innerHTML = `
-        <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" onerror="this.style.display='none'">
-        <h3 style="font-size: 1em; margin: 5px 0;">${player.name}</h3>
-        <span class="player-title title-${player.title.toLowerCase()}">${player.title}</span>
-        <div class="card-stats">
-          <div>ELO: ${Math.round(player.rating)}</div>
-          <div>Win: ${((player.wins / player.gamesPlayed) * 100 || 0).toFixed(1)}%</div>
-        </div>
-      `;
-      
-      return card;
-    }
-
+  // Use getCountryCode to correctly determine the country code.
+  const countryCode = getCountryCode(player.country);
+  
+  card.innerHTML = `
+    <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" onerror="this.style.display='none'">
+    <h3 style="font-size: 1em; margin: 5px 0;">${player.name}</h3>
+    <span class="player-title title-${player.title.toLowerCase()}">${player.title}</span>
+    <div class="card-stats">
+      <div>ELO: ${Math.round(player.rating)}</div>
+      <div>Win: ${((player.wins / player.gamesPlayed) * 100 || 0).toFixed(1)}%</div>
+    </div>
+  `;
+  
+  return card;
+}
     function showPlayerModal(player) {
-      const countryCode = emojiToCountryCode(player.country);
-      const modalHTML = `
-        <div class="modal-overlay" onclick="closeModal()"></div>
-        <div class="player-modal">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag">
-            <h2 style="margin:0;">${player.name} (${player.country})</h2>
-          </div>
-          <div class="player-title title-${player.title.toLowerCase()}" style="margin-top:10px; display:inline-block;">
-            ${player.title}
-          </div>
-          <div class="detailed-stats">
-            <div class="stat-row">
-              <span>Current Rating:</span>
-              <span>${Math.round(player.rating)}</span>
-            </div>
-            <div class="stat-row">
-              <span>Total Games:</span>
-              <span>${player.gamesPlayed}</span>
-            </div>
-            <div class="stat-row">
-              <span>Wins:</span>
-              <span>${player.wins}</span>
-            </div>
-            <div class="stat-row">
-              <span>Losses:</span>
-              <span>${player.losses}</span>
-            </div>
-            <div class="stat-row">
-              <span>Draws:</span>
-              <span>${player.draws}</span>
-            </div>
-            <div class="stat-row">
-              <span>Win Rate:</span>
-              <span>${((player.wins / player.gamesPlayed) * 100 || 0).toFixed(1)}%</span>
-            </div>
-          </div>
-          <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
+  const countryCode = getCountryCode(player.country);
+  const modalHTML = `
+    <div class="modal-overlay" onclick="closeModal()"></div>
+    <div class="player-modal">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag">
+        <h2 style="margin:0;">${player.name} (${player.country})</h2>
+      </div>
+      <div class="player-title title-${player.title.toLowerCase()}" style="margin-top:10px; display:inline-block;">
+        ${player.title}
+      </div>
+      <div class="detailed-stats">
+        <div class="stat-row">
+          <span>Current Rating:</span>
+          <span>${Math.round(player.rating)}</span>
         </div>
-      `;
-      document.body.insertAdjacentHTML('beforeend', modalHTML);
-    }
+        <div class="stat-row">
+          <span>Total Games:</span>
+          <span>${player.gamesPlayed}</span>
+        </div>
+        <div class="stat-row">
+          <span>Wins:</span>
+          <span>${player.wins}</span>
+        </div>
+        <div class="stat-row">
+          <span>Losses:</span>
+          <span>${player.losses}</span>
+        </div>
+        <div class="stat-row">
+          <span>Draws:</span>
+          <span>${player.draws}</span>
+        </div>
+        <div class="stat-row">
+          <span>Win Rate:</span>
+          <span>${((player.wins / player.gamesPlayed) * 100 || 0).toFixed(1)}%</span>
+        </div>
+      </div>
+      <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
 
     function closeModal() {
       document.querySelector('.modal-overlay')?.remove();
