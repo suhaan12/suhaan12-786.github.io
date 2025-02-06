@@ -202,7 +202,7 @@
     <header>
       <h1>Players Info & Stats</h1>
       <div>
-        <button id="toggle-dark">Toggle Dark Mode</button>
+        <button id="toggle-dark">Dark Mode</button>
         <a href="index.html">Back to Tracker</a>
       </div>
     </header>
@@ -220,7 +220,7 @@
   
   <script>
     let currentPage = 1;
-    const cardsPerPage = 12;
+    const cardsPerPage = 30;
 
     // Helper function to convert flag emoji to ISO country code.
     function emojiToCountryCode(emoji) {
@@ -235,6 +235,7 @@
   // Otherwise, assume it's an emoji and convert it.
   return emojiToCountryCode(country);
 }
+
 
     // Load players and populate cards from localStorage.
     function loadPlayers() {
@@ -317,6 +318,8 @@
   
   return card;
 }
+
+
     function showPlayerModal(player) {
   const countryCode = getCountryCode(player.country);
   const modalHTML = `
@@ -373,7 +376,7 @@
       if (totalPages <= 1) return;
 
       const prevButton = document.createElement('button');
-      prevButton.textContent = 'Prev';
+      prevButton.textContent = 'Previous';
       prevButton.disabled = currentPage === 1;
       prevButton.addEventListener('click', () => {
         if (currentPage > 1) {
