@@ -33,7 +33,7 @@
       flex: 1 100%;
       text-align: center;
     }
-    /* Dark mode & navigation buttons */
+    /* Navigation Buttons */
     button, a {
       margin: 5px;
       padding: 8px 12px;
@@ -83,12 +83,13 @@
     }
     .player-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
     }
     .player-card {
+      position: relative; /* Enable absolutely positioned children */
       background: white;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       transition: all 0.3s ease;
@@ -96,6 +97,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      text-align: center;
     }
     body.dark .player-card {
       background: #1e1e1e;
@@ -104,9 +106,23 @@
       transform: translateY(-3px);
       box-shadow: 0 6px 10px rgba(0,0,0,0.2);
     }
+    /* Trend indicator arrow */
+    .trend-indicator {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+    .trend-up {
+      color: green;
+    }
+    .trend-down {
+      color: red;
+    }
     /* Flag icon */
     .flag-icon {
-      width: 32px;
+      width: 40px;
       height: auto;
       border-radius: 3px;
       margin-bottom: 8px;
@@ -115,9 +131,9 @@
     .player-title {
       font-size: 0.75em;
       font-weight: bold;
-      padding: 3px 6px;
+      padding: 4px 8px;
       border-radius: 4px;
-      margin-top: 5px;
+      margin-bottom: 8px;
     }
     .title-gm {
       background-color: #ffcc00;
@@ -131,11 +147,14 @@
       background-color: #4caf50;
       color: #fff;
     }
-    /* Basic stats displayed on the card */
+    /* Card Stats */
     .card-stats {
-      margin-top: 10px;
-      text-align: center;
       font-size: 0.8em;
+      line-height: 1.4;
+      width: 100%;
+    }
+    .card-stats div {
+      margin: 2px 0;
     }
     /* Modal Styles */
     .player-modal {
@@ -176,7 +195,7 @@
     .detailed-stats .stat-row {
       display: flex;
       justify-content: space-between;
-      padding: 5px 0;
+      padding: 6px 0;
       border-bottom: 1px solid #eee;
     }
     body.dark .detailed-stats .stat-row {
@@ -212,6 +231,7 @@
       <input type="text" id="search-input" placeholder="Search player by name...">
     </div>
     
+    <!-- Players will be loaded into this section -->
     <div id="players-section"></div>
     
     <!-- Pagination Controls -->
@@ -222,22 +242,23 @@
     let currentPage = 1;
     const cardsPerPage = 30;
 
-    // Helper function to convert flag emoji to ISO country code.
+    // Helper: Convert flag emoji to ISO country code.
     function emojiToCountryCode(emoji) {
-      // Each flag emoji is made of two characters.
       return [...emoji].map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
     }
     function getCountryCode(country) {
-  // If the country value is already a 2-letter code, return it (in lowercase)
-  if (/^[A-Za-z]{2}$/.test(country)) {
-    return country.toLowerCase();
-  }
-  // Otherwise, assume it's an emoji and convert it.
-  return emojiToCountryCode(country);
-}
+      if (/^[A-Za-z]{2}$/.test(country)) {
+        return country.toLowerCase();
+      }
+      return emojiToCountryCode(country);
+    }
 
+    // Format ratio as a fraction string "X:Y" (or "N/A" if denominator is zero)
+    function formatRatio(numerator, denominator) {
+      return denominator > 0 ? `${numerator}:${denominator}` : "N/A";
+    }
 
-    // Load players and populate cards from localStorage.
+    // Load players from localStorage and populate cards.
     function loadPlayers() {
       const data = JSON.parse(localStorage.getItem('eloData')) || [];
       const section = document.getElementById('players-section');
@@ -257,14 +278,14 @@
       const start = (currentPage - 1) * cardsPerPage;
       const playersToShow = filteredData.slice(start, start + cardsPerPage);
 
-      // Create category containers (GM, IM, NM).
+      // Create category containers for GM, IM, NM.
       const categories = {
         GM: createCategory('Grandmasters (GM)'),
         IM: createCategory('International Masters (IM)'),
         NM: createCategory('National Masters (NM)')
       };
 
-      // Clear previous content.
+      // Clear previous category content.
       Object.values(categories).forEach(category => {
         category.querySelector('.player-cards').innerHTML = '';
       });
@@ -300,76 +321,101 @@
     }
 
     function createPlayerCard(player) {
-  const card = document.createElement('div');
-  card.className = 'player-card';
+      const card = document.createElement('div');
+      card.className = 'player-card';
 
-  // Use getCountryCode to correctly determine the country code.
-  const countryCode = getCountryCode(player.country);
-  
-  card.innerHTML = `
-    <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" onerror="this.style.display='none'">
-    <h3 style="font-size: 1em; margin: 5px 0;">${player.name}</h3>
-    <span class="player-title title-${player.title.toLowerCase()}">${player.title}</span>
-    <div class="card-stats">
-      <div>ELO: ${Math.round(player.rating)}</div>
-      <div>Win: ${((player.wins / player.gamesPlayed) * 100 || 0).toFixed(1)}%</div>
-    </div>
-  `;
-  
-  return card;
-}
-
+      const countryCode = getCountryCode(player.country);
+      
+      // Prepare a cleaner summary:
+      // - ELO rating
+      // - Record: Wins – Draws – Losses
+      // - Win percentage
+      const winPct = player.gamesPlayed > 0 ? ((player.wins / player.gamesPlayed) * 100).toFixed(1) : "0.0";
+      const record = `${player.wins}–${player.draws}–${player.losses}`;
+      
+      // Check for a recent rating change (delta). We assume that player.delta exists.
+      const delta = player.delta || 0;
+      let trendHTML = "";
+      if (delta > 0) {
+        trendHTML = '<div class="trend-indicator trend-up" title="Recent improvement">↑</div>';
+      } else if (delta < 0) {
+        trendHTML = '<div class="trend-indicator trend-down" title="Recent decline">↓</div>';
+      }
+      
+      card.innerHTML = `
+        ${trendHTML}
+        <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" onerror="this.style.display='none'">
+        <h3 style="font-size: 1em; margin: 5px 0;">${player.name}</h3>
+        <span class="player-title title-${player.title.toLowerCase()}">${player.title}</span>
+        <div class="card-stats">
+          <div><strong>ELO:</strong> ${Math.round(player.rating)}</div>
+          <div><strong>Record:</strong> ${record}</div>
+          <div><strong>Win %:</strong> ${winPct}%</div>
+        </div>
+      `;
+      return card;
+    }
 
     function showPlayerModal(player) {
-  const countryCode = getCountryCode(player.country);
-  const modalHTML = `
-    <div class="modal-overlay" onclick="closeModal()"></div>
-    <div class="player-modal">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag">
-        <h2 style="margin:0;">${player.name} (${player.country})</h2>
-      </div>
-      <div class="player-title title-${player.title.toLowerCase()}" style="margin-top:10px; display:inline-block;">
-        ${player.title}
-      </div>
-      <div class="detailed-stats">
-        <div class="stat-row">
-          <span>Current Rating:</span>
-          <span>${Math.round(player.rating)}</span>
+      const countryCode = getCountryCode(player.country);
+      // Compute additional ratios as fractions.
+      const winLoss = formatRatio(player.wins, player.losses);
+      const drawLoss = formatRatio(player.draws, player.losses);
+      const winDraw = formatRatio(player.wins, player.draws);
+      const winPct = player.gamesPlayed > 0 ? ((player.wins / player.gamesPlayed) * 100).toFixed(1) : "0.0";
+      const record = `${player.wins}–${player.draws}–${player.losses}`;
+
+      const modalHTML = `
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="player-modal">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom: 10px;">
+            <img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag">
+            <h2 style="margin:0;">${player.name} (${player.country})</h2>
+          </div>
+          <div class="player-title title-${player.title.toLowerCase()}" style="margin-bottom: 15px; display:inline-block;">
+            ${player.title}
+          </div>
+          <div class="detailed-stats">
+            <div class="stat-row">
+              <span><strong>Current Rating:</strong></span>
+              <span>${Math.round(player.rating)}</span>
+            </div>
+            <div class="stat-row">
+              <span><strong>Total Games:</strong></span>
+              <span>${player.gamesPlayed}</span>
+            </div>
+            <div class="stat-row">
+              <span><strong>Record (W–D–L):</strong></span>
+              <span>${record}</span>
+            </div>
+            <div class="stat-row">
+              <span><strong>Win %:</strong></span>
+              <span>${winPct}%</span>
+            </div>
+            <div class="stat-row">
+              <span><strong>W:L Ratio:</strong></span>
+              <span>${winLoss}</span>
+            </div>
+            <div class="stat-row">
+              <span><strong>D:L Ratio:</strong></span>
+              <span>${drawLoss}</span>
+            </div>
+            <div class="stat-row">
+              <span><strong>W:D Ratio:</strong></span>
+              <span>${winDraw}</span>
+            </div>
+          </div>
+          <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
         </div>
-        <div class="stat-row">
-          <span>Total Games:</span>
-          <span>${player.gamesPlayed}</span>
-        </div>
-        <div class="stat-row">
-          <span>Wins:</span>
-          <span>${player.wins}</span>
-        </div>
-        <div class="stat-row">
-          <span>Losses:</span>
-          <span>${player.losses}</span>
-        </div>
-        <div class="stat-row">
-          <span>Draws:</span>
-          <span>${player.draws}</span>
-        </div>
-        <div class="stat-row">
-          <span>Win Rate:</span>
-          <span>${((player.wins / player.gamesPlayed) * 100 || 0).toFixed(1)}%</span>
-        </div>
-      </div>
-      <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
 
     function closeModal() {
       document.querySelector('.modal-overlay')?.remove();
       document.querySelector('.player-modal')?.remove();
     }
 
-    // Render pagination controls.
     function renderPagination(totalPages) {
       const container = document.getElementById('pagination-controls');
       container.innerHTML = '';
@@ -410,13 +456,13 @@
       localStorage.setItem('darkMode', document.body.classList.contains('dark') ? 'enabled' : 'disabled');
     });
 
-    // Event listener for search input.
+    // Search input event listener.
     document.getElementById('search-input').addEventListener('input', () => {
       currentPage = 1; // Reset to first page on new search.
       loadPlayers();
     });
 
-    // Listen for storage events so that if index.html updates the eloData, we refresh the players list.
+    // Listen for storage events so that if the tracker updates eloData, we refresh the list.
     window.addEventListener('storage', (event) => {
       if (event.key === 'eloData') {
         loadPlayers();
@@ -428,7 +474,7 @@
       document.body.classList.add('dark');
     }
 
-    // Initial load of players when page loads.
+    // Initial load.
     loadPlayers();
   </script>
 </body>
