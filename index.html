@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chess ELO Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    /* Basic styles and transitions for dark mode */
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 20px;
+      background-color: #f0f2f5;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    body.dark {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      margin: 0;
+    }
+    /* Input section styling */
+    .input-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #fff;
+    }
+    body.dark .input-section {
+      background-color: #1e1e1e;
+      border-color: #444;
+    }
+    /* Table styling */
+    .elo-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .elo-table th,
+    .elo-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .elo-table th {
+      background-color: #f5f5f5;
+    }
+    body.dark .elo-table th {
+      background-color: #2a2a2a;
+    }
+    .player-title {
+      font-size: 0.9em;
+      color: #666;
+      font-weight: bold;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    .player-title.GM { background-color: #FFD700; color: #000; }
+    .player-title.IM { background-color: #C0C0C0; color: #000; }
+    .player-title.NM { background-color: #CD7F32; color: #fff; }
+    /* Dark mode adjustments for titles */
+    body.dark .player-title.GM { background-color: #FFD700; color: #121212; }
+    body.dark .player-title.IM { background-color: #0077b6; color: #ffffff; }
+    body.dark .player-title.NM { background-color: #B08D57; color: #fff; }
+    /* Flag icon styling */
+    .flag-icon {
+      width: 24px;
+      height: auto;
+      border-radius: 3px;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    /* Form elements */
+    select, button {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    a {
+      text-decoration: none;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Chess ELO Tracker</h1>
+      <div>
+        <button id="toggle-dark">Toggle Dark Mode</button>
+        <a href="players.html" style="margin-left: 20px;">Players Info</a>
+      </div>
+    </header>
+    
+    <div class="input-section">
+      <h3>Record Game Result:</h3>
+      <select id="player1"></select>
+      vs 
+      <select id="player2"></select>
+      <select id="result">
+        <option value="1-0">White Wins</option>
+        <option value="0-1">Black Wins</option>
+        <option value="½-½">Draw</option>
+      </select>
+      <button onclick="recordGame()">Submit Result</button>
+    </div>
+
+    <h2>Current Ratings</h2>
+    <table class="elo-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Title</th>
+          <th>ELO Rating</th>
+          <th>Games Played</th>
+          <th>Country</th>
+        </tr>
+      </thead>
+      <tbody id="ratings-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Player list with initial ratings and extended stats (wins, draws, losses, games played).
+    const players = [
+      // GRANDMASTERS [GM]
+      {name: "Hano Kafu", country: "JP", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Jean-Pascal Cuvier", country: "FR", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Lucas Moretti", country: "ES", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Light Yagami", country: "JP", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+
+      // INTERNATIONAL MASTERS [IM]
+      {name: "Elias Norberg", country: "🇸🇪", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Viktor Dragunov", country: "🇷🇺", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Alaric Varga", country: "🇭🇺", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Finn O’Callaghan", country: "🇮🇪", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Rafael Monteiro", country: "🇧🇷", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Emil Kovalenko", country: "🇺🇦", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Hugo Lancaster", country: "🇬🇧", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Chandra Singh", country: "🇮🇳", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Blake Barnes", country: "🇺🇸", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Yan Zacarias Silveira", country: "🇧🇷", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses:0},
+
+      // NATIONAL MASTERS [NM]
+      {name: "Willem Vries", country: "🇳🇱", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Tobias Falkenberg", country: "🇩🇪", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Ivan Stanimirović", country: "🇷🇸", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Naeem Rahmani", country: "🇵🇰", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Marcel Fontaine", country: "🇧🇪", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Zacharias Petrou", country: "🇬🇷", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Timur Baysangurov", country: "🇰🇿", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Felix Himmelsbach", country: "🇦🇹", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Joaquim Ferrer", country: "🇵🇹", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Etienne Duval", country: "🇫🇷", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+      {name: "Omar Al-Zubair", country: "🇸🇦", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0}
+    ];
+
+    // Save the players data in localStorage if not already present.
+    if (!localStorage.getItem('eloData')) {
+      localStorage.setItem('eloData', JSON.stringify(players));
+    }
+
+    // Helper function to get a proper country code.
+    // If the country string is already a two-letter code, we use it directly (in lowercase).
+    // Otherwise, we assume it's an emoji flag and convert it.
+    function getCountryCode(country) {
+      if (/^[A-Za-z]{2}$/.test(country)) {
+        return country.toLowerCase();
+      } else {
+        return [...country].map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
+      }
+    }
+
+    // Expected score calculation using the standard ELO formula.
+    function getExpectedScore(ratingA, ratingB) {
+      return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
+    }
+
+    // Update ratings and statistics for two players after a game.
+    function updateRatings(playerA, playerB, result) {
+      function getKFactor(player) {
+        if (player.gamesPlayed < 30) return 40;
+        else if (player.rating >= 2400) return 10;
+        else return 20;
+      }
+      const kA = getKFactor(playerA);
+      const kB = getKFactor(playerB);
+      const expectedA = getExpectedScore(playerA.rating, playerB.rating);
+      const expectedB = 1 - expectedA;
+      
+      let actualA, actualB;
+      if (result === '1-0') {
+        actualA = 1;
+        actualB = 0;
+      } else if (result === '0-1') {
+        actualA = 0;
+        actualB = 1;
+      } else {
+        actualA = 0.5;
+        actualB = 0.5;
+      }
+      
+      // Update ratings based on the outcome.
+      playerA.rating += kA * (actualA - expectedA);
+      playerB.rating += kB * (actualB - expectedB);
+      
+      // Update win/draw/loss stats.
+      if (result === '1-0') {
+        playerA.wins++;
+        playerB.losses++;
+      } else if (result === '0-1') {
+        playerA.losses++;
+        playerB.wins++;
+      } else {
+        playerA.draws++;
+        playerB.draws++;
+      }
+      
+      // Increment games played.
+      playerA.gamesPlayed++;
+      playerB.gamesPlayed++;
+    }
+
+    // Populate the dropdowns with player names.
+    function populatePlayers() {
+      const select1 = document.getElementById('player1');
+      const select2 = document.getElementById('player2');
+      const data = JSON.parse(localStorage.getItem('eloData'));
+      
+      data.forEach(player => {
+        const option1 = document.createElement('option');
+        option1.value = player.name;
+        option1.text = player.name + " (" + player.country + ")";
+        select1.add(option1);
+        
+        const option2 = document.createElement('option');
+        option2.value = player.name;
+        option2.text = player.name + " (" + player.country + ")";
+        select2.add(option2);
+      });
+    }
+
+    // Record a game result, update the ratings and statistics, then refresh the table.
+    function recordGame() {
+      const player1Name = document.getElementById('player1').value;
+      const player2Name = document.getElementById('player2').value;
+      const result = document.getElementById('result').value;
+      
+      if (player1Name === player2Name) {
+        alert("Please select two different players.");
+        return;
+      }
+      
+      let data = JSON.parse(localStorage.getItem('eloData'));
+      const p1 = data.find(p => p.name === player1Name);
+      const p2 = data.find(p => p.name === player2Name);
+      
+      if (!p1 || !p2) {
+        alert("Player not found!");
+        return;
+      }
+      
+      updateRatings(p1, p2, result);
+      localStorage.setItem('eloData', JSON.stringify(data));
+      updateRatingsTable();
+    }
+
+    // Update the table that displays current ratings.
+    function updateRatingsTable() {
+      const tbody = document.getElementById('ratings-body');
+      tbody.innerHTML = '';
+      
+      const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => b.rating - a.rating);
+      
+      data.forEach((player, index) => {
+        const countryCode = getCountryCode(player.country);
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${player.name}</td>
+          <td><span class="player-title ${player.title}">${player.title}</span></td>
+          <td>${Math.round(player.rating)}</td>
+          <td>${player.gamesPlayed}</td>
+          <td><img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag"></td>
+        `;
+      });
+    }
+
+    // Toggle dark mode.
+    document.getElementById('toggle-dark').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      // Optionally, you can save the dark mode preference to localStorage if needed.
+    });
+    // Set dark mode on load if enabled
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark');
+    }
+
+    // Initial population of players and ratings table.
+    populatePlayers();
+    updateRatingsTable();
+    
+  </script>
+</body>
+</html>
