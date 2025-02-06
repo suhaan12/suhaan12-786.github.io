@@ -177,283 +177,304 @@
     </table>
   </div>
 
-  <script>
-    const correctPassword = "abc123"; // Set your password here
+<script>
+  const correctPassword = "abc123"; // Set your password here
 
-    // The bulk entry section remains locked until the correct password is entered.
-    function unlockELOModification() {
-      const passwordInput = document.getElementById('password-input').value;
-      if (passwordInput === correctPassword) {
-        alert("ELO modification unlocked!");
-        // Enable the bulk entry buttons.
-        document.getElementById('add-row-btn').disabled = false;
-        document.getElementById('submit-bulk-btn').disabled = false;
-        // Enable all inputs inside the bulk table.
-        const bulkInputs = document.querySelectorAll('.bulk-table input, .bulk-table select, .bulk-table button');
-        bulkInputs.forEach(input => input.disabled = false);
-      } else {
-        alert("Incorrect password!");
-      }
-    }
+  // Default list of players with initial ratings and stats.
+  const players = [
+    // GRANDMASTERS [GM]
+    {name: "Vikram Rao", country: "IN", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Jean-Pascal Cuvier", country: "FR", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Lucas Moretti", country: "ES", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Light Yagami", country: "JP", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    
+    // INTERNATIONAL MASTERS [IM]
+    {name: "Elias Norberg", country: "🇸🇪", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Viktor Dragunov", country: "🇷🇺", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Alaric Varga", country: "🇭🇺", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Finn O’Callaghan", country: "🇮🇪", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Rafael Monteiro", country: "🇧🇷", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Emil Kovalenko", country: "🇺🇦", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Hugo Lancaster", country: "🇬🇧", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Chandra Singh", country: "🇮🇳", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Blake Barnes", country: "🇺🇸", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Yan Zacarias Silveira", country: "🇧🇷", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    
+    // NATIONAL MASTERS [NM]
+    {name: "Willem Vries", country: "🇳🇱", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Tobias Falkenberg", country: "🇩🇪", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Ivan Stanimirović", country: "🇷🇸", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Naeem Rahmani", country: "🇵🇰", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Marcel Fontaine", country: "🇧🇪", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Zacharias Petrou", country: "🇬🇷", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Timur Baysangurov", country: "🇰🇿", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Felix Himmelsbach", country: "🇦🇹", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Joaquim Ferrer", country: "🇵🇹", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Etienne Duval", country: "🇫🇷", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
+    {name: "Omar Al-Zubair", country: "🇸🇦", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0}
+  ];
 
-    // Player list with initial ratings and stats.
-    const players = [
-      // GRANDMASTERS [GM]
-      {name: "Vikram Rao", country: "IN", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Jean-Pascal Cuvier", country: "FR", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Lucas Moretti", country: "ES", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Light Yagami", country: "JP", title: "GM", rating: 2700, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      
-      // INTERNATIONAL MASTERS [IM]
-      {name: "Elias Norberg", country: "🇸🇪", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Viktor Dragunov", country: "🇷🇺", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Alaric Varga", country: "🇭🇺", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Finn O’Callaghan", country: "🇮🇪", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Rafael Monteiro", country: "🇧🇷", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Emil Kovalenko", country: "🇺🇦", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Hugo Lancaster", country: "🇬🇧", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Chandra Singh", country: "🇮🇳", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Blake Barnes", country: "🇺🇸", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Yan Zacarias Silveira", country: "🇧🇷", title: "IM", rating: 2500, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      
-      // NATIONAL MASTERS [NM]
-      {name: "Willem Vries", country: "🇳🇱", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Tobias Falkenberg", country: "🇩🇪", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Ivan Stanimirović", country: "🇷🇸", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Naeem Rahmani", country: "🇵🇰", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Marcel Fontaine", country: "🇧🇪", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Zacharias Petrou", country: "🇬🇷", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Timur Baysangurov", country: "🇰🇿", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Felix Himmelsbach", country: "🇦🇹", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Joaquim Ferrer", country: "🇵🇹", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Etienne Duval", country: "🇫🇷", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0},
-      {name: "Omar Al-Zubair", country: "🇸🇦", title: "NM", rating: 2300, gamesPlayed: 0, wins: 0, draws: 0, losses: 0}
-    ];
-
-    // Save players data in localStorage if not already present.
-    if (!localStorage.getItem('eloData')) {
-      localStorage.setItem('eloData', JSON.stringify(players));
-    }
-
-    // Fill the datalist for auto-completion with player names.
-    function populateDatalist() {
-      const datalist = document.getElementById('playerNames');
-      datalist.innerHTML = '';
-      const data = JSON.parse(localStorage.getItem('eloData'));
-      data.forEach(player => {
-        const option = document.createElement('option');
-        option.value = player.name;
-        datalist.appendChild(option);
-      });
-    }
-
-    // Our new, more nuanced outcome options.
-    // Each outcome is defined by:
-    // - scoreA and scoreB: the “result” (from player 1’s perspective)
-    // - multiplier: a factor that scales the K factor (so that, for instance, a win by forfeit is less “valuable” than a regular win)
-    const outcomeOptions = {
-      "win":           { scoreA: 1,   scoreB: 0,   multiplier: 1.0 },
-      "loss":          { scoreA: 0,   scoreB: 1,   multiplier: 1.0 },
-      "draw":          { scoreA: 0.5, scoreB: 0.5, multiplier: 1.0 },
-      "timeout win":   { scoreA: 1,   scoreB: 0,   multiplier: 0.9 },
-      "timeout loss":  { scoreA: 0,   scoreB: 1,   multiplier: 0.9 },
-      "forfeit win":   { scoreA: 1,   scoreB: 0,   multiplier: 0.8 },
-      "forfeit loss":  { scoreA: 0,   scoreB: 1,   multiplier: 0.8 }
-    };
-
-    // Expected score using the standard ELO formula.
-    function getExpectedScore(ratingA, ratingB) {
-      return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
-    }
-
-    // Update ratings and stats for two players after a game.
-    // This version applies the outcome multiplier.
-    function updateRatings(playerA, playerB, outcomeKey) {
-      const outcome = outcomeOptions[outcomeKey];
-      if (!outcome) {
-        console.error("Unknown outcome: " + outcomeKey);
-        return;
-      }
-      
-      // Determine K factor based on games played and rating.
-      function getKFactor(player) {
-        if (player.gamesPlayed < 30) return 40;
-        else if (player.rating >= 2400) return 10;
-        else return 20;
-      }
-      const kA = getKFactor(playerA);
-      const kB = getKFactor(playerB);
-      
-      const expectedA = getExpectedScore(playerA.rating, playerB.rating);
-      const expectedB = 1 - expectedA;
-      
-      // Apply multiplier for this outcome type.
-      playerA.rating += outcome.multiplier * kA * (outcome.scoreA - expectedA);
-      playerB.rating += outcome.multiplier * kB * (outcome.scoreB - expectedB);
-      
-      // Update basic win/draw/loss counters.
-      if (outcomeKey.includes("win")) {
-        playerA.wins++;
-        playerB.losses++;
-      } else if (outcomeKey.includes("loss")) {
-        playerA.losses++;
-        playerB.wins++;
-      } else {
-        playerA.draws++;
-        playerB.draws++;
-      }
-      
-      playerA.gamesPlayed++;
-      playerB.gamesPlayed++;
-    }
-
-    // --- Bulk Entry Section Functions ---
-    // Add a new row for bulk entry.
-    function addBulkRow() {
-      const tbody = document.getElementById('bulk-table').querySelector('tbody');
-      const row = document.createElement('tr');
-      
-      // Create Player 1 input with auto-complete.
-      const td1 = document.createElement('td');
-      td1.innerHTML = '<input type="text" class="bulk-player1" list="playerNames" placeholder="Player 1">';
-      
-      // Create Player 2 input with auto-complete.
-      const td2 = document.createElement('td');
-      td2.innerHTML = '<input type="text" class="bulk-player2" list="playerNames" placeholder="Player 2">';
-      
-      // Create Result dropdown.
-      const td3 = document.createElement('td');
-      // The dropdown now contains the extended outcome options.
-      td3.innerHTML = `
-        <select class="bulk-result">
-          <option value="win">Win</option>
-          <option value="loss">Loss</option>
-          <option value="draw">Draw</option>
-          <option value="timeout win">Timeout Win</option>
-          <option value="timeout loss">Timeout Loss</option>
-          <option value="forfeit win">Forfeit Win</option>
-          <option value="forfeit loss">Forfeit Loss</option>
-        </select>
-      `;
-      
-      // Create a remove button.
-      const td4 = document.createElement('td');
-      td4.innerHTML = '<button onclick="removeBulkRow(this)">Remove</button>';
-      
-      row.appendChild(td1);
-      row.appendChild(td2);
-      row.appendChild(td3);
-      row.appendChild(td4);
-      
-      tbody.appendChild(row);
-    }
-
-    // Remove a row from the bulk table.
-    function removeBulkRow(button) {
-      const row = button.parentElement.parentElement;
-      row.parentElement.removeChild(row);
-    }
-
-    // Process and record all bulk entries.
-    function submitBulkResults() {
-      const rows = document.querySelectorAll('#bulk-table tbody tr');
-      if (rows.length === 0) {
-        alert("No bulk entries to process.");
-        return;
-      }
-      
-      let data = JSON.parse(localStorage.getItem('eloData'));
-      let errors = [];
-      
-      rows.forEach((row, index) => {
-        const p1Name = row.querySelector('.bulk-player1').value.trim();
-        const p2Name = row.querySelector('.bulk-player2').value.trim();
-        const outcomeKey = row.querySelector('.bulk-result').value;
-        
-        if (!p1Name || !p2Name) {
-          errors.push(`Row ${index + 1}: Both player names are required.`);
-          return;
-        }
-        if (p1Name === p2Name) {
-          errors.push(`Row ${index + 1}: Cannot have the same player for both fields.`);
-          return;
-        }
-        if (!outcomeOptions[outcomeKey]) {
-          errors.push(`Row ${index + 1}: Invalid outcome "${outcomeKey}".`);
-          return;
-        }
-        const p1 = data.find(p => p.name === p1Name);
-        const p2 = data.find(p => p.name === p2Name);
-        if (!p1 || !p2) {
-          errors.push(`Row ${index + 1}: One or both players not found.`);
-          return;
-        }
-        updateRatings(p1, p2, outcomeKey);
-      });
-      
-      localStorage.setItem('eloData', JSON.stringify(data));
-      updateRatingsTable();
-      populateDatalist();
-      
-      if (errors.length) {
-        alert("Some entries could not be processed:\n" + errors.join("\n"));
-      } else {
-        alert("Bulk results processed successfully!");
-        // Optionally clear the bulk table after successful submission.
-        document.querySelector('#bulk-table tbody').innerHTML = '';
-      }
-    }
-
-    // Update the ratings table.
-    function updateRatingsTable() {
-      const tbody = document.getElementById('ratings-body');
-      tbody.innerHTML = '';
-      
-      const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => b.rating - a.rating);
-      
-      data.forEach((player, index) => {
-        const countryCode = getCountryCode(player.country);
-        const row = tbody.insertRow();
-        row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${player.name}</td>
-          <td><span class="player-title ${player.title}">${player.title}</span></td>
-          <td>${Math.round(player.rating)}</td>
-          <td>${player.gamesPlayed}</td>
-          <td><img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag"></td>
-        `;
-      });
-    }
-
-    // Helper function to get a proper country code.
-    function getCountryCode(country) {
-      if (/^[A-Za-z]{2}$/.test(country)) {
-        return country.toLowerCase();
-      } else {
-        return [...country].map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
-      }
-    }
-
-    // Toggle dark mode.
-    document.getElementById('toggle-dark').addEventListener('click', () => {
-      document.body.classList.toggle('dark');
+  // --- Merge New Players / Updates into Local Storage Without Resetting ELO --- //
+  // This version now also removes any players that are no longer in the default list.
+  function mergePlayers(defaultPlayers, storedPlayers) {
+    // Create a set of default player names.
+    const defaultPlayerNames = new Set(defaultPlayers.map(p => p.name));
+    
+    // Remove any stored players that are not in the default list.
+    let mergedPlayers = storedPlayers.filter(player => defaultPlayerNames.has(player.name));
+    
+    // Create a lookup for the merged players.
+    const storedMap = {};
+    mergedPlayers.forEach(player => {
+      storedMap[player.name] = player;
     });
-    if (localStorage.getItem('darkMode') === 'enabled') {
-      document.body.classList.add('dark');
-    }
-    if (!localStorage.getItem('eloData')) {
-      localStorage.setItem('eloData', JSON.stringify(players));
-    }
+    
+    // Loop through the default players.
+    defaultPlayers.forEach(defaultPlayer => {
+      if (storedMap[defaultPlayer.name]) {
+        // Update meta data (e.g. title or country) from the default data,
+        // but preserve rating and game stats.
+        storedMap[defaultPlayer.name].title = defaultPlayer.title;
+        storedMap[defaultPlayer.name].country = defaultPlayer.country;
+      } else {
+        // Add the new player.
+        mergedPlayers.push(defaultPlayer);
+      }
+    });
+    
+    return mergedPlayers;
+  }
 
-    // Initial population.
-    populateDatalist();
-    updateRatingsTable();
+  // On load, check localStorage and merge players.
+  let storedData = localStorage.getItem('eloData');
+  if (storedData) {
+    let storedPlayers = JSON.parse(storedData);
+    storedPlayers = mergePlayers(players, storedPlayers);
+    localStorage.setItem('eloData', JSON.stringify(storedPlayers));
+  } else {
+    localStorage.setItem('eloData', JSON.stringify(players));
+  }
+  // --- End Merge Section --- //
 
-    // Disable bulk section inputs until unlocked.
-    document.addEventListener('DOMContentLoaded', () => {
+  // Fill the datalist for auto-completion with player names.
+  function populateDatalist() {
+    const datalist = document.getElementById('playerNames');
+    datalist.innerHTML = '';
+    const data = JSON.parse(localStorage.getItem('eloData'));
+    data.forEach(player => {
+      const option = document.createElement('option');
+      option.value = player.name;
+      datalist.appendChild(option);
+    });
+  }
+
+  // Our new, more nuanced outcome options.
+  const outcomeOptions = {
+    "win":           { scoreA: 1,   scoreB: 0,   multiplier: 1.0 },
+    "loss":          { scoreA: 0,   scoreB: 1,   multiplier: 1.0 },
+    "draw":          { scoreA: 0.5, scoreB: 0.5, multiplier: 1.0 },
+    "timeout win":   { scoreA: 1,   scoreB: 0,   multiplier: 0.9 },
+    "timeout loss":  { scoreA: 0,   scoreB: 1,   multiplier: 0.9 },
+    "forfeit win":   { scoreA: 1,   scoreB: 0,   multiplier: 0.8 },
+    "forfeit loss":  { scoreA: 0,   scoreB: 1,   multiplier: 0.8 }
+  };
+
+  // Expected score using the standard ELO formula.
+  function getExpectedScore(ratingA, ratingB) {
+    return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
+  }
+
+  // Update ratings and stats for two players after a game.
+  function updateRatings(playerA, playerB, outcomeKey) {
+    const outcome = outcomeOptions[outcomeKey];
+    if (!outcome) {
+      console.error("Unknown outcome: " + outcomeKey);
+      return;
+    }
+    
+    // Determine K factor based on games played and rating.
+    function getKFactor(player) {
+      if (player.gamesPlayed < 30) return 40;
+      else if (player.rating >= 2400) return 10;
+      else return 20;
+    }
+    const kA = getKFactor(playerA);
+    const kB = getKFactor(playerB);
+    
+    const expectedA = getExpectedScore(playerA.rating, playerB.rating);
+    const expectedB = 1 - expectedA;
+    
+    // Apply multiplier for this outcome type.
+    playerA.rating += outcome.multiplier * kA * (outcome.scoreA - expectedA);
+    playerB.rating += outcome.multiplier * kB * (outcome.scoreB - expectedB);
+    
+    // Update basic win/draw/loss counters.
+    if (outcomeKey.includes("win")) {
+      playerA.wins++;
+      playerB.losses++;
+    } else if (outcomeKey.includes("loss")) {
+      playerA.losses++;
+      playerB.wins++;
+    } else {
+      playerA.draws++;
+      playerB.draws++;
+    }
+    
+    playerA.gamesPlayed++;
+    playerB.gamesPlayed++;
+  }
+
+  // --- Bulk Entry Section Functions --- //
+  function unlockELOModification() {
+    const passwordInput = document.getElementById('password-input').value;
+    if (passwordInput === correctPassword) {
+      alert("ELO modification unlocked!");
+      document.getElementById('add-row-btn').disabled = false;
+      document.getElementById('submit-bulk-btn').disabled = false;
       const bulkInputs = document.querySelectorAll('.bulk-table input, .bulk-table select, .bulk-table button');
-      bulkInputs.forEach(input => input.disabled = true);
+      bulkInputs.forEach(input => input.disabled = false);
+    } else {
+      alert("Incorrect password!");
+    }
+  }
+
+  // Add a new row for bulk entry.
+  function addBulkRow() {
+    const tbody = document.getElementById('bulk-table').querySelector('tbody');
+    const row = document.createElement('tr');
+    
+    const td1 = document.createElement('td');
+    td1.innerHTML = '<input type="text" class="bulk-player1" list="playerNames" placeholder="Player 1">';
+    
+    const td2 = document.createElement('td');
+    td2.innerHTML = '<input type="text" class="bulk-player2" list="playerNames" placeholder="Player 2">';
+    
+    const td3 = document.createElement('td');
+    td3.innerHTML = `
+      <select class="bulk-result">
+        <option value="win">Win</option>
+        <option value="loss">Loss</option>
+        <option value="draw">Draw</option>
+        <option value="timeout win">Timeout Win</option>
+        <option value="timeout loss">Timeout Loss</option>
+        <option value="forfeit win">Forfeit Win</option>
+        <option value="forfeit loss">Forfeit Loss</option>
+      </select>
+    `;
+    
+    const td4 = document.createElement('td');
+    td4.innerHTML = '<button onclick="removeBulkRow(this)">Remove</button>';
+    
+    row.appendChild(td1);
+    row.appendChild(td2);
+    row.appendChild(td3);
+    row.appendChild(td4);
+    
+    tbody.appendChild(row);
+  }
+
+  // Remove a row from the bulk table.
+  function removeBulkRow(button) {
+    const row = button.parentElement.parentElement;
+    row.parentElement.removeChild(row);
+  }
+
+  // Process and record all bulk entries.
+  function submitBulkResults() {
+    const rows = document.querySelectorAll('#bulk-table tbody tr');
+    if (rows.length === 0) {
+      alert("No bulk entries to process.");
+      return;
+    }
+    
+    let data = JSON.parse(localStorage.getItem('eloData'));
+    let errors = [];
+    
+    rows.forEach((row, index) => {
+      const p1Name = row.querySelector('.bulk-player1').value.trim();
+      const p2Name = row.querySelector('.bulk-player2').value.trim();
+      const outcomeKey = row.querySelector('.bulk-result').value;
+      
+      if (!p1Name || !p2Name) {
+        errors.push(`Row ${index + 1}: Both player names are required.`);
+        return;
+      }
+      if (p1Name === p2Name) {
+        errors.push(`Row ${index + 1}: Cannot have the same player for both fields.`);
+        return;
+      }
+      if (!outcomeOptions[outcomeKey]) {
+        errors.push(`Row ${index + 1}: Invalid outcome "${outcomeKey}".`);
+        return;
+      }
+      const p1 = data.find(p => p.name === p1Name);
+      const p2 = data.find(p => p.name === p2Name);
+      if (!p1 || !p2) {
+        errors.push(`Row ${index + 1}: One or both players not found.`);
+        return;
+      }
+      updateRatings(p1, p2, outcomeKey);
     });
-  </script>
+    
+    localStorage.setItem('eloData', JSON.stringify(data));
+    updateRatingsTable();
+    populateDatalist();
+    
+    if (errors.length) {
+      alert("Some entries could not be processed:\n" + errors.join("\n"));
+    } else {
+      alert("Bulk results processed successfully!");
+      document.querySelector('#bulk-table tbody').innerHTML = '';
+    }
+  }
+
+  // Update the ratings table.
+  function updateRatingsTable() {
+    const tbody = document.getElementById('ratings-body');
+    tbody.innerHTML = '';
+    
+    const data = JSON.parse(localStorage.getItem('eloData')).sort((a, b) => b.rating - a.rating);
+    
+    data.forEach((player, index) => {
+      const countryCode = getCountryCode(player.country);
+      const row = tbody.insertRow();
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${player.name}</td>
+        <td><span class="player-title ${player.title}">${player.title}</span></td>
+        <td>${Math.round(player.rating)}</td>
+        <td>${player.gamesPlayed}</td>
+        <td><img class="flag-icon" src="https://flagcdn.com/32x24/${countryCode}.png" alt="${player.country} flag"></td>
+      `;
+    });
+  }
+
+  // Helper function to get a proper country code.
+  function getCountryCode(country) {
+    if (/^[A-Za-z]{2}$/.test(country)) {
+      return country.toLowerCase();
+    } else {
+      return [...country].map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
+    }
+  }
+
+  // Toggle dark mode.
+  document.getElementById('toggle-dark').addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+  });
+  if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark');
+  }
+
+  // Initial population.
+  populateDatalist();
+  updateRatingsTable();
+
+  // Disable bulk section inputs until unlocked.
+  document.addEventListener('DOMContentLoaded', () => {
+    const bulkInputs = document.querySelectorAll('.bulk-table input, .bulk-table select, .bulk-table button');
+    bulkInputs.forEach(input => input.disabled = true);
+  });
+</script>
 </body>
 </html>
