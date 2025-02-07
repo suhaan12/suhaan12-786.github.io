@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chess Player Rankings</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css" />
+  <style>
+    /* Dark Mode and Enhanced UI Styles */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    .group-title {
+      margin-top: 40px;
+      text-align: center;
+      border-bottom: 2px solid #444;
+      padding-bottom: 5px;
+      font-size: 1.8em;
+      color: #fff;
+    }
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .card {
+      background: #1e1e1e;
+      border-radius: 12px;
+      margin: 10px;
+      width: 280px;
+      padding: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      border: 1px solid #333;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    }
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.4em;
+      color: #fff;
+    }
+    .card p {
+      margin: 5px 0;
+      color: #bbb;
+    }
+    .card .title-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .card .title-badge.GM {
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      color: #000;
+    }
+    .card .title-badge.IM {
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      color: #000;
+    }
+    .card .title-badge.NM {
+      background: linear-gradient(135deg, #84fab0, #8fd3f4);
+      color: #000;
+    }
+    .card .flag {
+      margin-right: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+    .modal-content {
+      background-color: #1e1e1e;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #444;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 12px;
+      animation: fadeIn 0.5s;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .elo-progress {
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  margin: 10px 0;
+}
+
+.elo-progress div {
+  height: 100%;
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  border-radius: 3px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 0.8em;
+  background: #333;
+  margin: 2px;
+}
+
+.variant-selector {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.variant-tab {
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #333;
+  transition: all 0.3s ease;
+}
+
+.variant-tab.active {
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+}
+
+.rating-container {
+  background: #2a2a2a;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chess Player Rankings</h1>
+    <div id="players-container"></div>
+  </div>
+
+  <!-- Modal for player details -->
+  <div id="player-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    // Player Data (export format exactly as used for copy-pasting)
+    const players = [
+  // Grandmasters [GM]
+  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 709, losses: 104, draws: 547 },
+  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 573, losses: 340, draws: 458 },
+  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 350, losses: 233, draws: 141 },
+  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 27, wins: 132, losses: 18, draws: 23 },
+  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 1085, losses: 130, draws: 890 },
+  // International Masters [IM]
+  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2547, age: 29, wins: 7, losses: 1, draws: 6 },
+  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2554, age: 31, wins: 3, losses: 2, draws: 0 },
+  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 2, losses: 3, draws: 0 },
+  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 0, losses: 0, draws: 0 },
+  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 32, wins: 0, losses: 0, draws: 0 },
+  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 34, wins: 0, losses: 0, draws: 0 },
+  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2522, age: 27, wins: 0, losses: 0, draws: 0 },
+  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2551, age: 17, wins: 0, losses: 0, draws: 0 },
+  // National Masters [NM]
+  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 33, wins: 1, losses: 7, draws: 6 },
+  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 31, wins: 0, losses: 0, draws: 0 },
+  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 },
+  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 32, wins: 0, losses: 0, draws: 0 },
+  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 29, wins: 5, losses: 5, draws: 0 },
+  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 27, wins: 0, losses: 0, draws: 0 },
+  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 33, wins: 2, losses: 3, draws: 0 },
+  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 34, wins: 0, losses: 0, draws: 0 },
+  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 }
+];
+
+    // Sorting: by title (GM, IM, NM), then descending ELO, then alphabetically
+    const titleOrder = { 'GM': 1, 'IM': 2, 'NM': 3 };
+    players.sort((a, b) => {
+      if (titleOrder[a.title] !== titleOrder[b.title]) {
+        return titleOrder[a.title] - titleOrder[b.title];
+      } else if (a.elo !== b.elo) {
+        return b.elo - a.elo;
+      } else {
+        return a.name.localeCompare(b.name);
+      }
+    });
+
+    // Create individual player card
+    function createPlayerCard(player) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="title-badge ${player.title}">${player.title}</div>
+        <h3>${player.name}</h3>
+        <p><span class="fi fi-${player.nationality.toLowerCase()} flag"></span> ${player.nationality}</p>
+        <p>ELO: ${player.elo}</p>
+      `;
+      card.addEventListener('click', () => openModal(player));
+      return card;
+    }
+
+    // Open modal with more player info
+    function openModal(player) {
+      const modal = document.getElementById('player-modal');
+      const modalBody = document.getElementById('modal-body');
+      modalBody.innerHTML = `
+        <h2>${player.name} (${player.title})</h2>
+        <p><strong>Nationality:</strong> <span class="fi fi-${player.nationality.toLowerCase()} flag"></span> ${player.nationality}</p>
+        <p><strong>Age:</strong> ${player.age}</p>
+        <p><strong>ELO:</strong> ${player.elo}</p>
+        <p><strong>Record:</strong> Wins: ${player.wins}, Losses: ${player.losses}, Draws: ${player.draws}</p>
+        <p><strong>Win Ratio:</strong> ${calculateWinRatio(player)}</p>
+      `;
+      modal.style.display = 'block';
+    }
+
+    function calculateWinRatio(player) {
+      const total = player.wins + player.losses + player.draws;
+      return total > 0 ? ((player.wins / total) * 100).toFixed(2) + '%' : 'N/A';
+    }
+
+    // Render players in groups (GM, IM, NM)
+    function renderPlayers() {
+      const container = document.getElementById('players-container');
+      container.innerHTML = '';
+
+      // Group players by title
+      const groups = {};
+      players.forEach(player => {
+        if (!groups[player.title]) groups[player.title] = [];
+        groups[player.title].push(player);
+      });
+
+      // Render each group in order: GM, IM, NM
+      Object.keys(titleOrder).forEach(title => {
+        if (groups[title]) {
+          const groupDiv = document.createElement('div');
+          groupDiv.innerHTML = `<h2 class="group-title">${title === 'GM' ? 'Grandmasters [GM]' : title === 'IM' ? 'International Masters [IM]' : 'National Masters [NM]'}</h2>`;
+          const cardsDiv = document.createElement('div');
+          cardsDiv.className = 'cards-container';
+          groups[title].forEach(player => cardsDiv.appendChild(createPlayerCard(player)));
+          groupDiv.appendChild(cardsDiv);
+          container.appendChild(groupDiv);
+        }
+      });
+    }
+
+    // Modal close behavior
+    document.querySelector('.close').addEventListener('click', () => {
+      document.getElementById('player-modal').style.display = 'none';
+    });
+    window.addEventListener('click', event => {
+      if (event.target === document.getElementById('player-modal')) {
+        document.getElementById('player-modal').style.display = 'none';
+      }
+    });
+
+    renderPlayers();
+  </script>
+</body>
+</html>
