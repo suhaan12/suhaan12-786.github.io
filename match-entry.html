@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Match Entry</title>
+  <style>
+    /* DARK MODE STYLES */
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+      margin-top: 10px;
+    }
+    select, button {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 4px;
+      border: none;
+      background-color: #3a3a3a;
+      color: #e0e0e0;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    .output {
+      background-color: #1e1e1e;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    .player-info {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Enter Match Result</h1>
+    <form id="match-form">
+      <div>
+        <label for="playerA">Player A:</label>
+        <select id="playerA" required></select>
+      </div>
+      <div>
+        <label for="playerB">Player B:</label>
+        <select id="playerB" required></select>
+      </div>
+      <div>
+        <label for="result">Result (from A's POV):</label>
+        <select id="result" required>
+          <option value="win">Win</option>
+          <option value="loss">Loss</option>
+          <option value="draw">Draw</option>
+          <option value="timeout_win">Timeout Win</option>
+          <option value="timeout_loss">Timeout Loss</option>
+          <option value="resignation_win">Resignation Win</option>
+          <option value="resignation_loss">Resignation Loss</option>
+        </select>
+      </div>
+      <div style="text-align:center; margin-top:15px;">
+        <button type="submit">Submit Match</button>
+      </div>
+    </form>
+
+    <h2>Updated Player Ratings</h2>
+    <div id="players-updated"></div>
+
+    <div style="text-align:center; margin-top:20px;">
+      <button id="export-btn">Export Updated Player Data</button>
+    </div>
+    <div id="export-output" class="output"></div>
+  </div>
+
+  <!--
+    IMPORTANT: This players array MUST match the one in index.html.
+    When you update match results, the ratings and stats will change.
+    Use the exported JSON to update your main page.
+  -->
+  <script>
+    const players = [
+  // Grandmasters [GM]
+  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 709, losses: 104, draws: 547 },
+  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 573, losses: 340, draws: 458 },
+  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 350, losses: 233, draws: 141 },
+  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 27, wins: 132, losses: 18, draws: 23 },
+  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 1085, losses: 130, draws: 890 },
+  // International Masters [IM]
+  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2547, age: 29, wins: 7, losses: 1, draws: 6 },
+  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2554, age: 31, wins: 3, losses: 2, draws: 0 },
+  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 2, losses: 3, draws: 0 },
+  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 0, losses: 0, draws: 0 },
+  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 32, wins: 0, losses: 0, draws: 0 },
+  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 34, wins: 0, losses: 0, draws: 0 },
+  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2522, age: 27, wins: 0, losses: 0, draws: 0 },
+  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2551, age: 17, wins: 0, losses: 0, draws: 0 },
+  // National Masters [NM]
+  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 33, wins: 1, losses: 7, draws: 6 },
+  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 31, wins: 0, losses: 0, draws: 0 },
+  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 },
+  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 32, wins: 0, losses: 0, draws: 0 },
+  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 29, wins: 5, losses: 5, draws: 0 },
+  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 27, wins: 0, losses: 0, draws: 0 },
+  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 33, wins: 2, losses: 3, draws: 0 },
+  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 34, wins: 0, losses: 0, draws: 0 },
+  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 }
+];
+
+    // Elo update settings
+    const ELO_CONFIG = {
+    baseK: 30,
+    titleModifiers: { GM: 0.8, IM: 0.9, NM: 1.0 },
+    ageModifier: (age) => Math.min(1.2, 1 + (30 / Math.max(age, 20))),
+    provisionalGames: 30,
+    deviationFactor: (gamesPlayed) => Math.max(0.5, 1 - (gamesPlayed / 100)),
+    ratingFloor: 1200,
+    performanceBonus: 1.2,
+    ratingCeiling: 2800
+  };
+
+  function calculateDynamicK(player, opponent) {
+    let k = ELO_CONFIG.baseK;
+    
+    // Title modifier
+    k *= ELO_CONFIG.titleModifiers[player.title];
+    
+    // Age modifier
+    k *= ELO_CONFIG.ageModifier(player.age);
+    
+    // Provisional games modifier
+    const totalGames = player.wins + player.losses + player.draws;
+    if (totalGames < ELO_CONFIG.provisionalGames) {
+      k *= 1.5 + (1 - (totalGames / ELO_CONFIG.provisionalGames));
+    }
+    
+    // Deviation factor
+    k *= ELO_CONFIG.deviationFactor(totalGames);
+    
+    return Math.min(40, Math.max(10, k));
+  }
+
+    // Populate the player dropdowns
+    const playerADropdown = document.getElementById('playerA');
+    const playerBDropdown = document.getElementById('playerB');
+    function populateDropdowns() {
+      players.forEach(player => {
+        const optionA = document.createElement('option');
+        optionA.value = player.id;
+        optionA.textContent = `${player.name} (${player.title})`;
+        playerADropdown.appendChild(optionA);
+
+        const optionB = document.createElement('option');
+        optionB.value = player.id;
+        optionB.textContent = `${player.name} (${player.title})`;
+        playerBDropdown.appendChild(optionB);
+      });
+    }
+    populateDropdowns();
+
+    // Helper to get player by id
+    function getPlayerById(id) {
+      return players.find(p => p.id === parseInt(id));
+    }
+
+    // Expected score for Elo calculation
+    function expectedScore(ratingA, ratingB) {
+      return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
+    }
+
+    // Update Elo ratings for two players given their scores (score: 1 for win, 0 for loss, 0.5 for draw)
+    function updateElo(playerA, playerB, scoreA, scoreB) {
+    const kA = calculateDynamicK(playerA, playerB);
+    const kB = calculateDynamicK(playerB, playerA);
+    
+    const expectedA = expectedScore(playerA.elo, playerB.elo);
+    const expectedB = expectedScore(playerB.elo, playerA.elo);
+    
+    let changeA = kA * (scoreA - expectedA);
+    let changeB = kB * (scoreB - expectedB);
+    
+    // Performance bonus for upset wins
+    if (scoreA > expectedA && playerA.elo < playerB.elo) {
+      changeA *= ELO_CONFIG.performanceBonus;
+    }
+    if (scoreB > expectedB && playerB.elo < playerA.elo) {
+      changeB *= ELO_CONFIG.performanceBonus;
+    }
+    
+    // Apply changes with boundaries
+    playerA.elo = Math.max(ELO_CONFIG.ratingFloor,
+      Math.min(ELO_CONFIG.ratingCeiling, 
+      Math.round(playerA.elo + changeA)));
+    
+    playerB.elo = Math.max(ELO_CONFIG.ratingFloor,
+      Math.min(ELO_CONFIG.ratingCeiling, 
+      Math.round(playerB.elo + changeB)));
+  }
+
+    // Process match form submission
+    document.getElementById('match-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const playerAId = playerADropdown.value;
+      const playerBId = playerBDropdown.value;
+      if (playerAId === playerBId) {
+        alert("Please select two different players.");
+        return;
+      }
+      const result = document.getElementById('result').value;
+      const playerA = getPlayerById(playerAId);
+      const playerB = getPlayerById(playerBId);
+
+      let scoreA, scoreB;
+      // Treat win/timeout/resignation wins as win; loss variants as loss; draw as draw.
+      if (result === 'win' || result === 'timeout_win' || result === 'resignation_win') {
+        scoreA = 1;
+        scoreB = 0;
+        playerA.wins++;
+        playerB.losses++;
+      } else if (result === 'loss' || result === 'timeout_loss' || result === 'resignation_loss') {
+        scoreA = 0;
+        scoreB = 1;
+        playerA.losses++;
+        playerB.wins++;
+      } else if (result === 'draw') {
+        scoreA = 0.5;
+        scoreB = 0.5;
+        playerA.draws++;
+        playerB.draws++;
+      }
+      updateElo(playerA, playerB, scoreA, scoreB);
+      renderUpdatedPlayers();
+    });
+
+    // Show updated player info below the form
+    function renderUpdatedPlayers() {
+      const container = document.getElementById('players-updated');
+      container.innerHTML = "";
+      players.forEach(player => {
+        const div = document.createElement("div");
+        div.className = "player-info";
+        div.textContent = `${player.name} (${player.title}) – Elo: ${player.elo}, Wins: ${player.wins}, Losses: ${player.losses}, Draws: ${player.draws}`;
+        container.appendChild(div);
+      });
+    }
+    renderUpdatedPlayers();
+
+    document.getElementById("export-btn").addEventListener("click", function () {
+    const groups = {
+      GM: players.filter(p => p.title === 'GM'),
+      IM: players.filter(p => p.title === 'IM'),
+      NM: players.filter(p => p.title === 'NM')
+    };
+
+    let exportText = "const players = [\n";
+    
+    // Grandmasters
+    exportText += "  // Grandmasters [GM]\n";
+    groups.GM.forEach(p => {
+      exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} },\n`;
+    });
+
+    // International Masters
+    exportText += "  // International Masters [IM]\n";
+    groups.IM.forEach(p => {
+      exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} },\n`;
+    });
+
+    // National Masters
+    exportText += "  // National Masters [NM]\n";
+    groups.NM.forEach((p, i) => {
+      exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} }${i === groups.NM.length - 1 ? '' : ','}\n`;
+    });
+
+    exportText += "];";
+    document.getElementById("export-output").textContent = exportText;
+  });
+</script>
+
+</body>
+</html>

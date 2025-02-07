@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chess Player Rankings</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css" />
+  <style>
+    /* Dark Mode and Enhanced UI Styles */
+    :root {
+      --gm-gradient: linear-gradient(135deg, #ff6b6b, #ff9a9e);
+      --im-gradient: linear-gradient(135deg, #4ecdc4, #45b7af);
+      --nm-gradient: linear-gradient(135deg, #96f2d7, #b2f4ff);
+      --elo-gold: #ffd700;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0a0a0a;
+      color: #f8f9fa;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 2rem 0;
+      font-size: 2.8rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(45deg, #fff, #aaa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .controls {
+      margin: 1rem 0;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      max-width: 300px;
+      padding: 0.75rem;
+      background: #252525;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      color: white;
+    }
+
+    .title-filters {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #3a3a3a;
+      background: #252525;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: var(--gm-gradient);
+      color: black;
+      border-color: transparent;
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 300px));
+      gap: 1.5rem;
+      padding: 1rem 0;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s ease;
+      border: 1px solid #2a2a2a;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      border-color: #3a3a3a;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .player-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .player-title::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+    }
+
+    .GM { background: var(--gm-gradient); color: #000; }
+    .IM { background: var(--im-gradient); color: #000; }
+    .NM { background: var(--nm-gradient); color: #000; }
+
+    .elo-display {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: greenyellow;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .elo-display::after {
+      content: 'ELO';
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 0.5px;
+    }
+
+    .player-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .flag-icon {
+      width: 42px;
+      height: 42px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .player-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .stat-item {
+      background: #252525;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border-left: 4px solid;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .performance-gauge {
+      height: 4px;
+      background: #2a2a2a;
+      border-radius: 2px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      background: var(--elo-gold);
+      border-radius: 2px;
+    }
+
+    /* Modal Enhancements */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      position: relative;
+      margin: 2rem auto;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 600px;
+      animation: modalSlide 0.3s ease;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(-50%); opacity: 1; }
+    }
+
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #888;
+      transition: color 0.2s;
+    }
+
+    .close:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CAT [CHESS AREA TOURNAMENTS] RANKINGS</h1>
+    <div class="controls">
+      <input type="text" id="search" placeholder="Search players..." class="search-input">
+      <div class="title-filters">
+        <button class="filter-btn active" data-title="all">All</button>
+        <button class="filter-btn" data-title="GM">GMs</button>
+        <button class="filter-btn" data-title="IM">IMs</button>
+        <button class="filter-btn" data-title="NM">NMs</button>
+      </div>
+    </div>
+    <div id="players-container"></div>
+  </div>
+
+  <!-- Modal for player details -->
+  <div id="player-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    // Player Data (export format exactly as used for copy-pasting)
+    const players = [
+  // Grandmasters [GM]
+  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 709, losses: 104, draws: 547 },
+  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 573, losses: 340, draws: 458 },
+  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 350, losses: 233, draws: 141 },
+  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 27, wins: 132, losses: 18, draws: 23 },
+  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 1085, losses: 130, draws: 890 },
+  // International Masters [IM]
+  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2547, age: 29, wins: 7, losses: 1, draws: 6 },
+  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2554, age: 31, wins: 3, losses: 2, draws: 0 },
+  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 2, losses: 3, draws: 0 },
+  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 0, losses: 0, draws: 0 },
+  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 32, wins: 0, losses: 0, draws: 0 },
+  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 34, wins: 0, losses: 0, draws: 0 },
+  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2522, age: 27, wins: 0, losses: 0, draws: 0 },
+  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2551, age: 17, wins: 0, losses: 0, draws: 0 },
+  // National Masters [NM]
+  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 33, wins: 1, losses: 7, draws: 6 },
+  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 31, wins: 0, losses: 0, draws: 0 },
+  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 },
+  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 32, wins: 0, losses: 0, draws: 0 },
+  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 29, wins: 5, losses: 5, draws: 0 },
+  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 27, wins: 0, losses: 0, draws: 0 },
+  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
+  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 33, wins: 2, losses: 3, draws: 0 },
+  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 34, wins: 0, losses: 0, draws: 0 },
+  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 }
+];
+  const titleOrder = { 'GM': 1, 'IM': 2, 'NM': 3 };
+    players.sort((a, b) => {
+      if (titleOrder[a.title] !== titleOrder[b.title]) {
+        return titleOrder[a.title] - titleOrder[b.title];
+      } else if (a.elo !== b.elo) {
+        return b.elo - a.elo;
+      } else {
+        return a.name.localeCompare(b.name);
+      }
+    });
+
+    // Simplify Win/Loss Ratio
+    function simplifyRatio(wins, losses) {
+      if (losses === 0) return `${wins}:0`;
+      const gcd = (a, b) => b ? gcd(b, a % b) : a;
+      const divisor = gcd(wins, losses);
+      return `${wins/divisor}:${losses/divisor}`;
+    }
+
+    // Calculate Performance Gauge
+    function calculatePerformance(wins, losses, draws) {
+      const total = wins + losses + draws;
+      if (total === 0) return 50; // Default midpoint
+      const performance = ((wins + (draws * 0.5)) / total) * 100;
+      // Apply sigmoid function to compress extremes
+      const compressed = 100 * (1 / (1 + Math.exp(-0.05*(performance-50))));
+      return Math.min(95, Math.max(5, compressed)); // Keep within 5-95% range
+    }
+
+    // Create individual player card
+    function createPlayerCard(player) {
+      const totalGames = player.wins + player.losses + player.draws;
+      const winRate = totalGames > 0 ? 
+        ((player.wins / totalGames) * 100).toFixed(1) : 0;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-header">
+          <span class="player-title ${player.title}">${player.title}</span>
+          <span class="elo-display">${player.elo}</span>
+          <span class="fi fi-${player.nationality.toLowerCase()} flag-icon"></span>
+        </div>
+        <h3>${player.name}</h3>
+        <p>Age: ${player.age} • ${player.nationality}</p>
+
+        <div class="performance-gauge">
+          <div class="gauge-fill" style="width: ${calculatePerformance(player.wins, player.losses, player.draws)}%"></div>
+        </div>
+
+        <div class="player-stats">
+          <div class="stat-item" style="border-color: #4CAF50">
+            <div class="stat-label">Total Games</div>
+            <div class="stat-value">${totalGames}</div>
+          </div>
+          
+          <div class="stat-item" style="border-color: #2196F3">
+            <div class="stat-label">Win Rate</div>
+            <div class="stat-value">${winRate}%</div>
+          </div>
+          
+          <div class="stat-item" style="border-color: #FF9800">
+            <div class="stat-label">W/L Ratio</div>
+            <div class="stat-value">${simplifyRatio(player.wins, player.losses)}</div>
+          </div>
+          
+          <div class="stat-item" style="border-color: #9C27B0">
+            <div class="stat-label">Draw Rate</div>
+            <div class="stat-value">${((player.draws/totalGames)*100 || 0).toFixed(1)}%</div>
+          </div>
+        </div>
+      `;
+      card.addEventListener('click', () => openModal(player));
+      return card;
+    }
+
+    // Open modal with more player info
+    function openModal(player) {
+      const modal = document.getElementById('player-modal');
+      const modalBody = document.getElementById('modal-body');
+      modalBody.innerHTML = `
+        <h2>${player.name} (${player.title})</h2>
+        <p><strong>Nationality:</strong> <span class="fi fi-${player.nationality.toLowerCase()} flag"></span> ${player.nationality}</p>
+        <p><strong>Age:</strong> ${player.age}</p>
+        <p><strong>ELO:</strong> ${player.elo}</p>
+        <p><strong>Record:</strong> Wins: ${player.wins}, Losses: ${player.losses}, Draws: ${player.draws}</p>
+        <p><strong>Win Ratio:</strong> ${((player.wins / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
+      `;
+      modal.style.display = 'block';
+    }
+
+    // Filter and Search Functionality
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      renderPlayers();
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.title;
+        renderPlayers();
+      });
+    });
+
+    // Render players in groups (GM, IM, NM)
+    function renderPlayers() {
+      const container = document.getElementById('players-container');
+      container.innerHTML = '';
+
+      const filteredPlayers = players.filter(player => {
+        const matchesSearch = player.name.toLowerCase().includes(searchQuery);
+        const matchesFilter = currentFilter === 'all' || player.title === currentFilter;
+        return matchesSearch && matchesFilter;
+      });
+
+      // Group players by title
+      const groups = {};
+      filteredPlayers.forEach(player => {
+        if (!groups[player.title]) groups[player.title] = [];
+        groups[player.title].push(player);
+      });
+
+      // Render each group in order: GM, IM, NM
+      Object.keys(titleOrder).forEach(title => {
+        if (groups[title]) {
+          const groupDiv = document.createElement('div');
+          groupDiv.innerHTML = `<h2 class="group-title">${title === 'GM' ? 'Grandmasters [GM]' : title === 'IM' ? 'International Masters [IM]' : 'National Masters [NM]'}</h2>`;
+          const cardsDiv = document.createElement('div');
+          cardsDiv.className = 'cards-container';
+          groups[title].forEach(player => cardsDiv.appendChild(createPlayerCard(player)));
+          groupDiv.appendChild(cardsDiv);
+          container.appendChild(groupDiv);
+        }
+      });
+    }
+
+    // Modal close behavior
+    document.querySelector('.close').addEventListener('click', () => {
+      document.getElementById('player-modal').style.display = 'none';
+    });
+    window.addEventListener('click', event => {
+      if (event.target === document.getElementById('player-modal')) {
+        document.getElementById('player-modal').style.display = 'none';
+      }
+    });
+
+    renderPlayers();
+  </script>
+</body>
+</html>
