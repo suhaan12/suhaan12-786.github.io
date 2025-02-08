@@ -199,7 +199,7 @@
 
     .gauge-fill {
       height: 100%;
-      background: var(--elo-gold);
+      background: indianred;
       border-radius: 2px;
     }
 
@@ -272,37 +272,103 @@
   </div>
 
   <script>
+    const countryNames = {
+    "AF": "Afghanistan", "AL": "Albania", "DZ": "Algeria", "AS": "American Samoa", 
+    "AD": "Andorra", "AO": "Angola", "AI": "Anguilla", "AQ": "Antarctica", 
+    "AG": "Antigua and Barbuda", "AR": "Argentina", "AM": "Armenia", "AW": "Aruba", 
+    "AU": "Australia", "AT": "Austria", "AZ": "Azerbaijan", "BS": "Bahamas", 
+    "BH": "Bahrain", "BD": "Bangladesh", "BB": "Barbados", "BY": "Belarus", 
+    "BE": "Belgium", "BZ": "Belize", "BJ": "Benin", "BM": "Bermuda", 
+    "BT": "Bhutan", "BO": "Bolivia", "BQ": "Bonaire, Sint Eustatius and Saba", 
+    "BA": "Bosnia and Herzegovina", "BW": "Botswana", "BV": "Bouvet Island", 
+    "BR": "Brazil", "IO": "British Indian Ocean Territory", "BN": "Brunei", 
+    "BG": "Bulgaria", "BF": "Burkina Faso", "BI": "Burundi", "CV": "Cabo Verde", 
+    "KH": "Cambodia", "CM": "Cameroon", "CA": "Canada", "KY": "Cayman Islands", 
+    "CF": "Central African Republic", "TD": "Chad", "CL": "Chile", "CN": "China", 
+    "CX": "Christmas Island", "CC": "Cocos (Keeling) Islands", "CO": "Colombia", 
+    "KM": "Comoros", "CD": "Congo, Democratic Republic of the", "CG": "Congo", 
+    "CK": "Cook Islands", "CR": "Costa Rica", "HR": "Croatia", "CU": "Cuba", 
+    "CW": "Curaçao", "CY": "Cyprus", "CZ": "Czech Republic", "DK": "Denmark", 
+    "DJ": "Djibouti", "DM": "Dominica", "DO": "Dominican Republic", "EC": "Ecuador", 
+    "EG": "Egypt", "SV": "El Salvador", "GQ": "Equatorial Guinea", "ER": "Eritrea", 
+    "EE": "Estonia", "SZ": "Eswatini", "ET": "Ethiopia", "FK": "Falkland Islands", 
+    "FO": "Faroe Islands", "FJ": "Fiji", "FI": "Finland", "FR": "France", 
+    "GF": "French Guiana", "PF": "French Polynesia", "TF": "French Southern Territories", 
+    "GA": "Gabon", "GM": "Gambia", "GE": "Georgia", "DE": "Germany", 
+    "GH": "Ghana", "GI": "Gibraltar", "GR": "Greece", "GL": "Greenland", 
+    "GD": "Grenada", "GP": "Guadeloupe", "GU": "Guam", "GT": "Guatemala", 
+    "GG": "Guernsey", "GN": "Guinea", "GW": "Guinea-Bissau", "GY": "Guyana", 
+    "HT": "Haiti", "HM": "Heard Island and McDonald Islands", "VA": "Holy See", 
+    "HN": "Honduras", "HK": "Hong Kong", "HU": "Hungary", "IS": "Iceland", 
+    "IN": "India", "ID": "Indonesia", "IR": "Iran", "IQ": "Iraq", 
+    "IE": "Ireland", "IM": "Isle of Man", "IL": "Israel", "IT": "Italy", 
+    "JM": "Jamaica", "JE": "Jersey", "JP": "Japan", "KE": "Kenya", 
+    "KI": "Kiribati", "KP": "Korea, North", "KR": "Korea, South", 
+    "KW": "Kuwait", "KG": "Kyrgyzstan", "LA": "Laos", "LV": "Latvia", 
+    "LB": "Lebanon", "LS": "Lesotho", "LR": "Liberia", "LY": "Libya", 
+    "LI": "Liechtenstein", "LT": "Lithuania", "LU": "Luxembourg", 
+    "MO": "Macao", "MG": "Madagascar", "MW": "Malawi", "MY": "Malaysia", 
+    "MV": "Maldives", "ML": "Mali", "MT": "Malta", "MH": "Marshall Islands", 
+    "MQ": "Martinique", "MR": "Mauritania", "MU": "Mauritius", "YT": "Mayotte", 
+    "MX": "Mexico", "FM": "Micronesia", "MD": "Moldova", "MC": "Monaco", 
+    "MN": "Mongolia", "MT": "Montenegro", "MS": "Montserrat", "MA": "Morocco", 
+    "MZ": "Mozambique", "MM": "Myanmar", "NA": "Namibia", "NR": "Nauru", 
+    "NP": "Nepal", "NL": "Netherlands", "NZ": "New Zealand", "NI": "Nicaragua", 
+    "NE": "Niger", "NG": "Nigeria", "NU": "Niue", "NF": "Norfolk Island", 
+    "KP": "North Korea", "MP": "Northern Mariana Islands", "NO": "Norway", 
+    "OM": "Oman", "PK": "Pakistan", "PW": "Palau", "PS": "Palestine, State of", 
+    "PA": "Panama", "PG": "Papua New Guinea", "PY": "Paraguay", "PE": "Peru", 
+    "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PT": "Portugal", 
+    "PR": "Puerto Rico", "QA": "Qatar", "RE": "Réunion", "RO": "Romania", 
+    "RU": "Russia", "RW": "Rwanda", "BL": "Saint Barthélemy", "SH": "Saint Helena", 
+    "KNA": "Saint Kitts and Nevis", "LC": "Saint Lucia", "MF": "Saint Martin", 
+    "SX": "Saint Maarten", "SG": "Singapore", "SK": "Slovakia", "SI": "Slovenia", 
+    "SB": "Solomon Islands", "SO": "Somalia", "ZA": "South Africa", 
+    "GS": "South Georgia and the South Sandwich Islands", "SS": "South Sudan", 
+    "ES": "Spain", "LK": "Sri Lanka", "SD": "Sudan", "SR": "Suriname", 
+    "SJ": "Svalbard and Jan Mayen", "SE": "Sweden", "CH": "Switzerland", 
+    "SY": "Syria", "TW": "Taiwan", "TJ": "Tajikistan", "TZ": "Tanzania", 
+    "TH": "Thailand", "TL": "Timor-Leste", "TG": "Togo", "TK": "Tokelau", 
+    "TO": "Tonga", "TT": "Trinidad and Tobago", "TN": "Tunisia", 
+    "TR": "Turkey", "TM": "Turkmenistan", "TC": "Turks and Caicos Islands", 
+    "TV": "Tuvalu", "UG": "Uganda", "UA": "Ukraine", "AE": "United Arab Emirates", 
+    "GB": "United Kingdom", "US": "United States", "UY": "Uruguay", 
+    "UZ": "Uzbekistan", "VU": "Vanuatu", "VE": "Venezuela", "VN": "Vietnam", 
+    "WF": "Wallis and Futuna", "EH": "Western Sahara", "YE": "Yemen", 
+    "ZM": "Zambia", "ZW": "Zimbabwe"
+};
     // Player Data (export format exactly as used for copy-pasting)
     const players = [
   // Grandmasters [GM]
-  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 709, losses: 104, draws: 547 },
-  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 573, losses: 340, draws: 458 },
-  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 350, losses: 233, draws: 141 },
-  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 27, wins: 132, losses: 18, draws: 23 },
-  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 1085, losses: 130, draws: 890 },
+  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 6090, losses: 3445, draws: 5477 },
+  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 5739, losses: 3408, draws: 3634 },
+  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 17806, losses: 2339, draws: 5970 },
+  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 22, wins: 1320, losses: 395, draws: 125 },
+  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 10850, losses: 1308, draws: 4079 },
   // International Masters [IM]
-  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2547, age: 29, wins: 7, losses: 1, draws: 6 },
-  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2554, age: 31, wins: 3, losses: 2, draws: 0 },
-  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 2, losses: 3, draws: 0 },
-  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 0, losses: 0, draws: 0 },
-  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 32, wins: 0, losses: 0, draws: 0 },
-  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 34, wins: 0, losses: 0, draws: 0 },
-  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2522, age: 27, wins: 0, losses: 0, draws: 0 },
-  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2551, age: 17, wins: 0, losses: 0, draws: 0 },
+  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 19, wins: 5674, losses: 4213, draws: 3178 },
+  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2557, age: 22, wins: 6347, losses: 1643, draws: 6123 },
+  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2574, age: 21, wins: 7583, losses: 2644, draws: 5754 },
+  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 5123, losses: 4813, draws: 4623 },
+  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 9831, losses: 2359, draws: 575 },
+  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 16, wins: 2363, losses: 2475, draws: 4748 },
+  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 24, wins: 6354, losses: 7645, draws: 1735 },
+  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 19, wins: 4859, losses: 2180, draws: 3890 },
+  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2422, age: 27, wins: 5310, losses: 3631, draws: 4981 },
+  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2571, age: 17, wins: 2304, losses: 541, draws: 782 },
   // National Masters [NM]
-  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 33, wins: 1, losses: 7, draws: 6 },
-  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 31, wins: 0, losses: 0, draws: 0 },
-  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 },
-  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 32, wins: 0, losses: 0, draws: 0 },
-  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 29, wins: 5, losses: 5, draws: 0 },
-  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 27, wins: 0, losses: 0, draws: 0 },
-  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 33, wins: 2, losses: 3, draws: 0 },
-  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 34, wins: 0, losses: 0, draws: 0 },
-  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 }
+  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 16, wins: 1, losses: 7, draws: 6 },
+  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 17, wins: 0, losses: 0, draws: 0 },
+  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 18, wins: 0, losses: 0, draws: 0 },
+  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 15, wins: 0, losses: 0, draws: 0 },
+  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 16, wins: 0, losses: 0, draws: 0 },
+  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 17, wins: 5, losses: 5, draws: 0 },
+  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 19, wins: 0, losses: 0, draws: 0 },
+  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 20, wins: 0, losses: 0, draws: 0 },
+  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 20, wins: 2, losses: 3, draws: 0 },
+  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 18, wins: 0, losses: 0, draws: 0 },
+  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 15, wins: 0, losses: 0, draws: 0 },
+
 ];
   const titleOrder = { 'GM': 1, 'IM': 2, 'NM': 3 };
     players.sort((a, b) => {
@@ -315,13 +381,57 @@
       }
     });
 
-    // Simplify Win/Loss Ratio
     function simplifyRatio(wins, losses) {
-      if (losses === 0) return `${wins}:0`;
-      const gcd = (a, b) => b ? gcd(b, a % b) : a;
-      const divisor = gcd(wins, losses);
-      return `${wins/divisor}:${losses/divisor}`;
+  if (losses === 0) return `${wins}:0`;
+  if (wins === 0) return `0:${losses}`;
+
+  // Find the greatest common divisor (GCD)
+  const gcd = (a, b) => {
+    while (b !== 0) {
+      let temp = b;
+      b = a % b;
+      a = temp;
     }
+    return a;
+  };
+
+  // Calculate the ratio divisor
+  let divisor = gcd(wins, losses);
+
+  // If the ratio is still too large, find a common factor to reduce further
+  while ((wins / divisor > 100 || losses / divisor > 100) && divisor < wins && divisor < losses) {
+    divisor++;
+  }
+
+  // Ensure we don't divide by zero
+  divisor = divisor || 1;
+
+  // Calculate simplified values
+  const simplifiedWins = Math.round(wins / divisor);
+  const simplifiedLosses = Math.round(losses / divisor);
+
+  // If still too large, use a proportional approximation
+  if (simplifiedWins > 100 || simplifiedLosses > 100) {
+    const total = wins + losses;
+    const winPercentage = wins / total;
+    const lossPercentage = losses / total;
+
+    // Find the smallest multiplier that gives numbers within a reasonable range
+    let multiplier = 1;
+    while (true) {
+      const w = Math.round(winPercentage * multiplier);
+      const l = Math.round(lossPercentage * multiplier);
+      if (w <= 100 && l <= 100) {
+        return `${w}:${l}`;
+      }
+      multiplier++;
+      if (multiplier > 100) break; // Safety check
+    }
+  }
+
+  return `${simplifiedWins}:${simplifiedLosses}`;
+}
+
 
     // Calculate Performance Gauge
     function calculatePerformance(wins, losses, draws) {
@@ -348,7 +458,7 @@
           <span class="fi fi-${player.nationality.toLowerCase()} flag-icon"></span>
         </div>
         <h3>${player.name}</h3>
-        <p>Age: ${player.age} • ${player.nationality}</p>
+        <p>Age: ${player.age} • ${countryNames[player.nationality]}</p>
 
         <div class="performance-gauge">
           <div class="gauge-fill" style="width: ${calculatePerformance(player.wins, player.losses, player.draws)}%"></div>
@@ -386,7 +496,7 @@
       const modalBody = document.getElementById('modal-body');
       modalBody.innerHTML = `
         <h2>${player.name} (${player.title})</h2>
-        <p><strong>Nationality:</strong> <span class="fi fi-${player.nationality.toLowerCase()} flag"></span> ${player.nationality}</p>
+        <p><strong>Nationality:</strong>  ${countryNames[player.nationality]} <span class="fi fi-${player.nationality.toLowerCase()} flag"></span></p>
         <p><strong>Age:</strong> ${player.age}</p>
         <p><strong>ELO:</strong> ${player.elo}</p>
         <p><strong>Record:</strong> Wins: ${player.wins}, Losses: ${player.losses}, Draws: ${player.draws}</p>
