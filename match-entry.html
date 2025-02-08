@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Match Entry</title>
+  <title>Match Entry - Complex Elo System</title>
   <style>
     /* DARK MODE STYLES */
     body {
@@ -90,75 +90,114 @@
   <!--
     IMPORTANT: This players array MUST match the one in index.html.
     When you update match results, the ratings and stats will change.
-    Use the exported JSON to update your main page.
   -->
   <script>
+    // Sample player data (adjust as needed)
     const players = [
   // Grandmasters [GM]
-  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 709, losses: 104, draws: 547 },
-  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 573, losses: 340, draws: 458 },
-  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 350, losses: 233, draws: 141 },
-  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 27, wins: 132, losses: 18, draws: 23 },
-  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 1085, losses: 130, draws: 890 },
+  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 6090, losses: 3445, draws: 5477 },
+  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 5739, losses: 3408, draws: 3634 },
+  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 17806, losses: 2339, draws: 5970 },
+  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 22, wins: 1320, losses: 395, draws: 125 },
+  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 10850, losses: 1308, draws: 4079 },
   // International Masters [IM]
-  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2547, age: 29, wins: 7, losses: 1, draws: 6 },
-  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2554, age: 31, wins: 3, losses: 2, draws: 0 },
-  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 2, losses: 3, draws: 0 },
-  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 0, losses: 0, draws: 0 },
-  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 32, wins: 0, losses: 0, draws: 0 },
-  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 34, wins: 0, losses: 0, draws: 0 },
-  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2522, age: 27, wins: 0, losses: 0, draws: 0 },
-  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2551, age: 17, wins: 0, losses: 0, draws: 0 },
+  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 19, wins: 5674, losses: 4213, draws: 3178 },
+  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2557, age: 22, wins: 6347, losses: 1643, draws: 6123 },
+  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2574, age: 21, wins: 7583, losses: 2644, draws: 5754 },
+  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 5123, losses: 4813, draws: 4623 },
+  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 9831, losses: 2359, draws: 575 },
+  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 16, wins: 2363, losses: 2475, draws: 4748 },
+  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 24, wins: 6354, losses: 7645, draws: 1735 },
+  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 19, wins: 4859, losses: 2180, draws: 3890 },
+  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2422, age: 27, wins: 5310, losses: 3631, draws: 4981 },
+  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2571, age: 17, wins: 2304, losses: 541, draws: 782 },
   // National Masters [NM]
-  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 33, wins: 1, losses: 7, draws: 6 },
-  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 31, wins: 0, losses: 0, draws: 0 },
-  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 },
-  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 32, wins: 0, losses: 0, draws: 0 },
-  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 29, wins: 5, losses: 5, draws: 0 },
-  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 27, wins: 0, losses: 0, draws: 0 },
-  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 30, wins: 0, losses: 0, draws: 0 },
-  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 33, wins: 2, losses: 3, draws: 0 },
-  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 34, wins: 0, losses: 0, draws: 0 },
-  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 28, wins: 0, losses: 0, draws: 0 }
+  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 16, wins: 1, losses: 7, draws: 6 },
+  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 17, wins: 0, losses: 0, draws: 0 },
+  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 18, wins: 0, losses: 0, draws: 0 },
+  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 15, wins: 0, losses: 0, draws: 0 },
+  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 16, wins: 0, losses: 0, draws: 0 },
+  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 17, wins: 5, losses: 5, draws: 0 },
+  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 19, wins: 0, losses: 0, draws: 0 },
+  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 20, wins: 0, losses: 0, draws: 0 },
+  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 20, wins: 2, losses: 3, draws: 0 },
+  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 18, wins: 0, losses: 0, draws: 0 },
+  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 15, wins: 0, losses: 0, draws: 0 },
+
 ];
 
-    // Elo update settings
-    const ELO_CONFIG = {
-    baseK: 30,
-    titleModifiers: { GM: 0.8, IM: 0.9, NM: 1.0 },
-    ageModifier: (age) => Math.min(1.2, 1 + (30 / Math.max(age, 20))),
-    provisionalGames: 30,
-    deviationFactor: (gamesPlayed) => Math.max(0.5, 1 - (gamesPlayed / 100)),
-    ratingFloor: 1200,
-    performanceBonus: 1.2,
-    ratingCeiling: 2800
-  };
+    // --- COMPLEX ELO CONFIGURATION ---
+    const ELO_COMPLEX_CONFIG = {
+      baseK: 30,
+      titleModifiers: { GM: 0.8, IM: 0.9, NM: 1.0 },
+      // A slightly enhanced age modifier with a higher cap (up to 1.3)
+      ageModifier: (age) => Math.min(1.3, 1 + (40 / Math.max(age, 20))),
+      provisionalGames: 30,
+      // Experience factor: boosts K when games played is less than provisional threshold
+      experienceFactor: (totalGames) => totalGames < 30 ? (1.5 + ((30 - totalGames) / 30)) : 1,
+      // Volatility factor: higher for players with very few games
+      volatilityFactor: (totalGames) => totalGames < 20 ? 1.2 : 1,
+      // Upset bonus: if the opponent's rating is higher, reward more points (up to a 50% bonus)
+      upsetBonus: (playerElo, opponentElo) => {
+        let diff = opponentElo - playerElo;
+        return diff > 0 ? (1 + Math.min(diff / 400, 0.5)) : 1;
+      },
+      // A random factor to simulate inherent game-to-game variability (±5%)
+      randomFactorRange: 0.05,
+      // Deviation factor: slightly decreases K as more games are played (with a slower drop-off)
+      deviationFactor: (totalGames) => Math.max(0.5, 1 - (totalGames / 150)),
+      ratingFloor: 1200,
+      ratingCeiling: 3000,
+      logisticScale: 400  // standard logistic scale (can be tweaked)
+    };
 
-  function calculateDynamicK(player, opponent) {
-    let k = ELO_CONFIG.baseK;
-    
-    // Title modifier
-    k *= ELO_CONFIG.titleModifiers[player.title];
-    
-    // Age modifier
-    k *= ELO_CONFIG.ageModifier(player.age);
-    
-    // Provisional games modifier
-    const totalGames = player.wins + player.losses + player.draws;
-    if (totalGames < ELO_CONFIG.provisionalGames) {
-      k *= 1.5 + (1 - (totalGames / ELO_CONFIG.provisionalGames));
+    // Calculate effective K using many variables:
+    function calculateComplexK(player, opponent) {
+      const totalGames = player.wins + player.losses + player.draws;
+      let k = ELO_COMPLEX_CONFIG.baseK;
+      // Apply title modifier (if not defined, default to 1)
+      k *= (ELO_COMPLEX_CONFIG.titleModifiers[player.title] || 1);
+      // Apply age modifier
+      k *= ELO_COMPLEX_CONFIG.ageModifier(player.age);
+      // Experience/provisional factor
+      k *= ELO_COMPLEX_CONFIG.experienceFactor(totalGames);
+      // Volatility factor (fewer games → more fluctuation)
+      k *= ELO_COMPLEX_CONFIG.volatilityFactor(totalGames);
+      // Deviation factor (reduces impact as players become more established)
+      k *= ELO_COMPLEX_CONFIG.deviationFactor(totalGames);
+      // Upset bonus: if beating a stronger opponent, boost K further
+      if (player.elo < opponent.elo) {
+        k *= ELO_COMPLEX_CONFIG.upsetBonus(player.elo, opponent.elo);
+      }
+      // Introduce a small random multiplier (±5%)
+      let randomMultiplier = 1 + (Math.random() * 2 - 1) * ELO_COMPLEX_CONFIG.randomFactorRange;
+      k *= randomMultiplier;
+      // Clamp K to a reasonable range (e.g., between 10 and 50)
+      return Math.min(50, Math.max(10, k));
     }
-    
-    // Deviation factor
-    k *= ELO_CONFIG.deviationFactor(totalGames);
-    
-    return Math.min(40, Math.max(10, k));
-  }
 
-    // Populate the player dropdowns
+    // Expected score using logistic function:
+    function expectedScoreComplex(player, opponent) {
+      return 1 / (1 + Math.pow(10, (opponent.elo - player.elo) / ELO_COMPLEX_CONFIG.logisticScale));
+    }
+
+    // Update Elo ratings for two players using the complex system
+    function updateComplexElo(playerA, playerB, scoreA, scoreB) {
+      const kA = calculateComplexK(playerA, playerB);
+      const kB = calculateComplexK(playerB, playerA);
+      const E_A = expectedScoreComplex(playerA, playerB);
+      const E_B = expectedScoreComplex(playerB, playerA);
+      const changeA = kA * (scoreA - E_A);
+      const changeB = kB * (scoreB - E_B);
+      playerA.elo = Math.max(ELO_COMPLEX_CONFIG.ratingFloor,
+        Math.min(ELO_COMPLEX_CONFIG.ratingCeiling, Math.round(playerA.elo + changeA)));
+      playerB.elo = Math.max(ELO_COMPLEX_CONFIG.ratingFloor,
+        Math.min(ELO_COMPLEX_CONFIG.ratingCeiling, Math.round(playerB.elo + changeB)));
+    }
+
+    // --- END COMPLEX ELO FUNCTIONS ---
+
+    // Populate the player dropdowns (same as before)
     const playerADropdown = document.getElementById('playerA');
     const playerBDropdown = document.getElementById('playerB');
     function populateDropdowns() {
@@ -176,46 +215,12 @@
     }
     populateDropdowns();
 
-    // Helper to get player by id
+    // Helper: get player by id
     function getPlayerById(id) {
       return players.find(p => p.id === parseInt(id));
     }
 
-    // Expected score for Elo calculation
-    function expectedScore(ratingA, ratingB) {
-      return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
-    }
-
-    // Update Elo ratings for two players given their scores (score: 1 for win, 0 for loss, 0.5 for draw)
-    function updateElo(playerA, playerB, scoreA, scoreB) {
-    const kA = calculateDynamicK(playerA, playerB);
-    const kB = calculateDynamicK(playerB, playerA);
-    
-    const expectedA = expectedScore(playerA.elo, playerB.elo);
-    const expectedB = expectedScore(playerB.elo, playerA.elo);
-    
-    let changeA = kA * (scoreA - expectedA);
-    let changeB = kB * (scoreB - expectedB);
-    
-    // Performance bonus for upset wins
-    if (scoreA > expectedA && playerA.elo < playerB.elo) {
-      changeA *= ELO_CONFIG.performanceBonus;
-    }
-    if (scoreB > expectedB && playerB.elo < playerA.elo) {
-      changeB *= ELO_CONFIG.performanceBonus;
-    }
-    
-    // Apply changes with boundaries
-    playerA.elo = Math.max(ELO_CONFIG.ratingFloor,
-      Math.min(ELO_CONFIG.ratingCeiling, 
-      Math.round(playerA.elo + changeA)));
-    
-    playerB.elo = Math.max(ELO_CONFIG.ratingFloor,
-      Math.min(ELO_CONFIG.ratingCeiling, 
-      Math.round(playerB.elo + changeB)));
-  }
-
-    // Process match form submission
+    // Process match form submission using the new complex Elo system
     document.getElementById('match-form').addEventListener('submit', function (e) {
       e.preventDefault();
       const playerAId = playerADropdown.value;
@@ -229,7 +234,7 @@
       const playerB = getPlayerById(playerBId);
 
       let scoreA, scoreB;
-      // Treat win/timeout/resignation wins as win; loss variants as loss; draw as draw.
+      // For win/timeout/resignation wins, treat as win; for losses, treat as loss; draw as draw.
       if (result === 'win' || result === 'timeout_win' || result === 'resignation_win') {
         scoreA = 1;
         scoreB = 0;
@@ -246,11 +251,12 @@
         playerA.draws++;
         playerB.draws++;
       }
-      updateElo(playerA, playerB, scoreA, scoreB);
+      // Update ratings using our complex Elo function
+      updateComplexElo(playerA, playerB, scoreA, scoreB);
       renderUpdatedPlayers();
     });
 
-    // Show updated player info below the form
+    // Display updated player info
     function renderUpdatedPlayers() {
       const container = document.getElementById('players-updated');
       container.innerHTML = "";
@@ -263,37 +269,37 @@
     }
     renderUpdatedPlayers();
 
+    // Export updated player data as JSON
     document.getElementById("export-btn").addEventListener("click", function () {
-    const groups = {
-      GM: players.filter(p => p.title === 'GM'),
-      IM: players.filter(p => p.title === 'IM'),
-      NM: players.filter(p => p.title === 'NM')
-    };
+      const groups = {
+        GM: players.filter(p => p.title === 'GM'),
+        IM: players.filter(p => p.title === 'IM'),
+        NM: players.filter(p => p.title === 'NM')
+      };
 
-    let exportText = "const players = [\n";
-    
-    // Grandmasters
-    exportText += "  // Grandmasters [GM]\n";
-    groups.GM.forEach(p => {
-      exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} },\n`;
+      let exportText = "const players = [\n";
+      
+      // Grandmasters
+      exportText += "  // Grandmasters [GM]\n";
+      groups.GM.forEach(p => {
+        exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} },\n`;
+      });
+
+      // International Masters
+      exportText += "  // International Masters [IM]\n";
+      groups.IM.forEach(p => {
+        exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} },\n`;
+      });
+
+      // National Masters
+      exportText += "  // National Masters [NM]\n";
+      groups.NM.forEach((p, i) => {
+        exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} }${i === groups.NM.length - 1 ? '' : ','}\n`;
+      });
+
+      exportText += "];";
+      document.getElementById("export-output").textContent = exportText;
     });
-
-    // International Masters
-    exportText += "  // International Masters [IM]\n";
-    groups.IM.forEach(p => {
-      exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} },\n`;
-    });
-
-    // National Masters
-    exportText += "  // National Masters [NM]\n";
-    groups.NM.forEach((p, i) => {
-      exportText += `  { id: ${p.id}, name: "${p.name}", title: "${p.title}", nationality: "${p.nationality}", elo: ${p.elo}, age: ${p.age}, wins: ${p.wins}, losses: ${p.losses}, draws: ${p.draws} }${i === groups.NM.length - 1 ? '' : ','}\n`;
-    });
-
-    exportText += "];";
-    document.getElementById("export-output").textContent = exportText;
-  });
-</script>
-
+  </script>
 </body>
 </html>
