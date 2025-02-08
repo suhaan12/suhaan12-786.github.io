@@ -357,17 +357,17 @@
   { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2422, age: 27, wins: 5310, losses: 3631, draws: 4981 },
   { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2571, age: 17, wins: 2304, losses: 541, draws: 782 },
   // National Masters [NM]
-  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 1427, age: 16, wins: 1, losses: 7, draws: 6 },
-  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 1500, age: 17, wins: 0, losses: 0, draws: 0 },
-  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 1500, age: 18, wins: 0, losses: 0, draws: 0 },
-  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 1500, age: 15, wins: 0, losses: 0, draws: 0 },
-  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 1500, age: 16, wins: 0, losses: 0, draws: 0 },
-  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 1548, age: 17, wins: 5, losses: 5, draws: 0 },
-  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 1500, age: 19, wins: 0, losses: 0, draws: 0 },
-  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 1500, age: 20, wins: 0, losses: 0, draws: 0 },
-  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 1519, age: 20, wins: 2, losses: 3, draws: 0 },
-  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 1500, age: 18, wins: 0, losses: 0, draws: 0 },
-  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 1500, age: 15, wins: 0, losses: 0, draws: 0 },
+  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 2456, age: 16, wins: 1, losses: 7, draws: 6 },
+  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 2341, age: 17, wins: 50, losses: 30, draws: 20 },
+  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 2236, age: 18, wins: 45, losses: 25, draws: 15 },
+  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 2542, age: 15, wins: 55, losses: 20, draws: 10 },
+  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 2431, age: 16, wins: 40, losses: 50, draws: 10 },
+  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 2671, age: 17, wins: 5, losses: 5, draws: 0 },
+  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 2346, age: 19, wins: 60, losses: 15, draws: 15 },
+  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 2414, age: 20, wins: 48, losses: 40, draws: 12 },
+  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 2576, age: 20, wins: 2, losses: 3, draws: 0 },
+  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 2521, age: 18, wins: 35, losses: 25, draws: 15 },
+  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 2487, age: 15, wins: 10, losses: 5, draws: 5 }
 
 ];
   const titleOrder = { 'GM': 1, 'IM': 2, 'NM': 3 };
@@ -500,7 +500,9 @@
         <p><strong>Age:</strong> ${player.age}</p>
         <p><strong>ELO:</strong> ${player.elo}</p>
         <p><strong>Record:</strong> Wins: ${player.wins}, Losses: ${player.losses}, Draws: ${player.draws}</p>
-        <p><strong>Win Ratio:</strong> ${((player.wins / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
+        <p><strong>Win Rate:</strong> ${((player.wins / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
+        <p><strong>Draw Rate:</strong> ${((player.draws / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
+        <p><strong>Loss Rate:</strong> ${((player.losses / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
       `;
       modal.style.display = 'block';
     }
