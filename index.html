@@ -79,7 +79,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(110px, 300px));
       gap: 1.5rem;
-      padding: 1rem 0;
+      padding: 2px;
     }
 
     .card {
@@ -190,47 +190,157 @@
     }
 
     .performance-gauge {
-      height: 4px;
-      background: #2a2a2a;
-      border-radius: 2px;
-      margin: 1rem 0;
+      height: 8px;
+      background: transparent;
+      border-radius: 4px;
+      margin: 1.5rem 0;
       overflow: hidden;
+      display: flex;
+      gap: 1px;
     }
 
-    .gauge-fill {
+    .gauge-segment {
       height: 100%;
-      background: indianred;
-      border-radius: 2px;
+      transition: all 0.3s ease;
     }
 
-    /* Modal Enhancements */
+    .gauge-wins { background: #4CAF50; }
+    .gauge-draws { background: #9C27B0; }
+    .gauge-losses { background: #FF5252; }
+
+    /* Enhanced Modal Styles */
     .modal {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
       z-index: 1000;
-      overflow-y: auto;
-    }
-
-    .modal-content {
-      position: relative;
-      margin: 2rem auto;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #1a1a1a;
-      border-radius: 16px;
-      padding: 2rem;
-      max-width: 600px;
-      animation: modalSlide 0.3s ease;
+      padding: 1rem;
+      animation: modalSlide 0.5s ease-out;
     }
 
     @keyframes modalSlide {
       from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(-50%); opacity: 1; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-content {
+      max-width: 800px;
+      width: 100%;
+      padding: 2.5rem;
+      background: linear-gradient(145deg, #1a1a1a, #252525);
+      border: 1px solid #3a3a3a;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+      position: relative;
+      border-radius: 12px;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid #3a3a3a;
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .modal-header h2 {
+      font-size: 2.2rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: #252525;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border-left: 4px solid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,255,255,0.05), transparent);
+    }
+
+    .stat-card h3 {
+      font-size: 0.9rem;
+      color: #888;
+      margin: 0 0 0.75rem 0;
+    }
+
+    .stat-card .value {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .badge-container {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .player-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background: #252525;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge-icon {
+      width: 18px;
+      height: 18px;
+      filter: brightness(0.8);
+    }
+
+    .elo-evolution {
+      height: 100px;
+      margin: 1.5rem 0;
+      background: #252525;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .additional-info {
+      margin-top: 2rem;
+      background: #1a1a1a;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #3a3a3a;
+    }
+
+    .additional-info h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
+    .additional-info p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #ccc;
     }
 
     .close {
@@ -246,6 +356,65 @@
     .close:hover {
       color: #fff;
     }
+    .elo-display {
+  position: relative;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.elo-progress {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.elo-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  width: calc{${player.elo}/3000*100%};
+}
+
+.trend-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+}
+
+.trend-up { color: #4CAF50; }
+.trend-down { color: #FF5252; }
+
+
+.achievement-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--gm-gradient);
+  color: #000;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.prediction-chip {
+  background: rgba(173, 216, 230, 0.15);
+  border: 1px solid rgba(173, 216, 230, 0.3);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
   </style>
 </head>
 <body>
@@ -273,104 +442,104 @@
 
   <script>
     const countryNames = {
-    "AF": "Afghanistan", "AL": "Albania", "DZ": "Algeria", "AS": "American Samoa", 
-    "AD": "Andorra", "AO": "Angola", "AI": "Anguilla", "AQ": "Antarctica", 
-    "AG": "Antigua and Barbuda", "AR": "Argentina", "AM": "Armenia", "AW": "Aruba", 
-    "AU": "Australia", "AT": "Austria", "AZ": "Azerbaijan", "BS": "Bahamas", 
-    "BH": "Bahrain", "BD": "Bangladesh", "BB": "Barbados", "BY": "Belarus", 
-    "BE": "Belgium", "BZ": "Belize", "BJ": "Benin", "BM": "Bermuda", 
-    "BT": "Bhutan", "BO": "Bolivia", "BQ": "Bonaire, Sint Eustatius and Saba", 
-    "BA": "Bosnia and Herzegovina", "BW": "Botswana", "BV": "Bouvet Island", 
-    "BR": "Brazil", "IO": "British Indian Ocean Territory", "BN": "Brunei", 
-    "BG": "Bulgaria", "BF": "Burkina Faso", "BI": "Burundi", "CV": "Cabo Verde", 
-    "KH": "Cambodia", "CM": "Cameroon", "CA": "Canada", "KY": "Cayman Islands", 
-    "CF": "Central African Republic", "TD": "Chad", "CL": "Chile", "CN": "China", 
-    "CX": "Christmas Island", "CC": "Cocos (Keeling) Islands", "CO": "Colombia", 
-    "KM": "Comoros", "CD": "Congo, Democratic Republic of the", "CG": "Congo", 
-    "CK": "Cook Islands", "CR": "Costa Rica", "HR": "Croatia", "CU": "Cuba", 
-    "CW": "Curaçao", "CY": "Cyprus", "CZ": "Czech Republic", "DK": "Denmark", 
-    "DJ": "Djibouti", "DM": "Dominica", "DO": "Dominican Republic", "EC": "Ecuador", 
-    "EG": "Egypt", "SV": "El Salvador", "GQ": "Equatorial Guinea", "ER": "Eritrea", 
-    "EE": "Estonia", "SZ": "Eswatini", "ET": "Ethiopia", "FK": "Falkland Islands", 
-    "FO": "Faroe Islands", "FJ": "Fiji", "FI": "Finland", "FR": "France", 
-    "GF": "French Guiana", "PF": "French Polynesia", "TF": "French Southern Territories", 
-    "GA": "Gabon", "GM": "Gambia", "GE": "Georgia", "DE": "Germany", 
-    "GH": "Ghana", "GI": "Gibraltar", "GR": "Greece", "GL": "Greenland", 
-    "GD": "Grenada", "GP": "Guadeloupe", "GU": "Guam", "GT": "Guatemala", 
-    "GG": "Guernsey", "GN": "Guinea", "GW": "Guinea-Bissau", "GY": "Guyana", 
-    "HT": "Haiti", "HM": "Heard Island and McDonald Islands", "VA": "Holy See", 
-    "HN": "Honduras", "HK": "Hong Kong", "HU": "Hungary", "IS": "Iceland", 
-    "IN": "India", "ID": "Indonesia", "IR": "Iran", "IQ": "Iraq", 
-    "IE": "Ireland", "IM": "Isle of Man", "IL": "Israel", "IT": "Italy", 
-    "JM": "Jamaica", "JE": "Jersey", "JP": "Japan", "KE": "Kenya", 
-    "KI": "Kiribati", "KP": "Korea, North", "KR": "Korea, South", 
-    "KW": "Kuwait", "KG": "Kyrgyzstan", "LA": "Laos", "LV": "Latvia", 
-    "LB": "Lebanon", "LS": "Lesotho", "LR": "Liberia", "LY": "Libya", 
-    "LI": "Liechtenstein", "LT": "Lithuania", "LU": "Luxembourg", 
-    "MO": "Macao", "MG": "Madagascar", "MW": "Malawi", "MY": "Malaysia", 
-    "MV": "Maldives", "ML": "Mali", "MT": "Malta", "MH": "Marshall Islands", 
-    "MQ": "Martinique", "MR": "Mauritania", "MU": "Mauritius", "YT": "Mayotte", 
-    "MX": "Mexico", "FM": "Micronesia", "MD": "Moldova", "MC": "Monaco", 
-    "MN": "Mongolia", "MT": "Montenegro", "MS": "Montserrat", "MA": "Morocco", 
-    "MZ": "Mozambique", "MM": "Myanmar", "NA": "Namibia", "NR": "Nauru", 
-    "NP": "Nepal", "NL": "Netherlands", "NZ": "New Zealand", "NI": "Nicaragua", 
-    "NE": "Niger", "NG": "Nigeria", "NU": "Niue", "NF": "Norfolk Island", 
-    "KP": "North Korea", "MP": "Northern Mariana Islands", "NO": "Norway", 
-    "OM": "Oman", "PK": "Pakistan", "PW": "Palau", "PS": "Palestine, State of", 
-    "PA": "Panama", "PG": "Papua New Guinea", "PY": "Paraguay", "PE": "Peru", 
-    "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PT": "Portugal", 
-    "PR": "Puerto Rico", "QA": "Qatar", "RE": "Réunion", "RO": "Romania", 
-    "RU": "Russia", "RW": "Rwanda", "BL": "Saint Barthélemy", "SH": "Saint Helena", 
-    "KNA": "Saint Kitts and Nevis", "LC": "Saint Lucia", "MF": "Saint Martin", 
-    "SX": "Saint Maarten", "SG": "Singapore", "SK": "Slovakia", "SI": "Slovenia", 
-    "SB": "Solomon Islands", "SO": "Somalia", "ZA": "South Africa", 
-    "GS": "South Georgia and the South Sandwich Islands", "SS": "South Sudan", 
-    "ES": "Spain", "LK": "Sri Lanka", "SD": "Sudan", "SR": "Suriname", 
-    "SJ": "Svalbard and Jan Mayen", "SE": "Sweden", "CH": "Switzerland", 
-    "SY": "Syria", "TW": "Taiwan", "TJ": "Tajikistan", "TZ": "Tanzania", 
-    "TH": "Thailand", "TL": "Timor-Leste", "TG": "Togo", "TK": "Tokelau", 
-    "TO": "Tonga", "TT": "Trinidad and Tobago", "TN": "Tunisia", 
-    "TR": "Turkey", "TM": "Turkmenistan", "TC": "Turks and Caicos Islands", 
-    "TV": "Tuvalu", "UG": "Uganda", "UA": "Ukraine", "AE": "United Arab Emirates", 
-    "GB": "United Kingdom", "US": "United States", "UY": "Uruguay", 
-    "UZ": "Uzbekistan", "VU": "Vanuatu", "VE": "Venezuela", "VN": "Vietnam", 
-    "WF": "Wallis and Futuna", "EH": "Western Sahara", "YE": "Yemen", 
-    "ZM": "Zambia", "ZW": "Zimbabwe"
-};
-    // Player Data (export format exactly as used for copy-pasting)
-    const players = [
-  // Grandmasters [GM]
-  { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 6090, losses: 3445, draws: 5477 },
-  { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 5739, losses: 3408, draws: 3634 },
-  { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 17806, losses: 2339, draws: 5970 },
-  { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 22, wins: 1320, losses: 395, draws: 125 },
-  { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 10850, losses: 1308, draws: 4079 },
-  // International Masters [IM]
-  { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 19, wins: 5674, losses: 4213, draws: 3178 },
-  { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2557, age: 22, wins: 6347, losses: 1643, draws: 6123 },
-  { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2574, age: 21, wins: 7583, losses: 2644, draws: 5754 },
-  { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 5123, losses: 4813, draws: 4623 },
-  { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 9831, losses: 2359, draws: 575 },
-  { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 16, wins: 2363, losses: 2475, draws: 4748 },
-  { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 24, wins: 6354, losses: 7645, draws: 1735 },
-  { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 19, wins: 4859, losses: 2180, draws: 3890 },
-  { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2422, age: 27, wins: 5310, losses: 3631, draws: 4981 },
-  { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2571, age: 17, wins: 2304, losses: 541, draws: 782 },
-  // National Masters [NM]
-  { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 2456, age: 16, wins: 1, losses: 7, draws: 6 },
-  { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 2341, age: 17, wins: 50, losses: 30, draws: 20 },
-  { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 2236, age: 18, wins: 45, losses: 25, draws: 15 },
-  { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 2542, age: 15, wins: 55, losses: 20, draws: 10 },
-  { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 2431, age: 16, wins: 40, losses: 50, draws: 10 },
-  { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 2671, age: 17, wins: 5, losses: 5, draws: 0 },
-  { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 2346, age: 19, wins: 60, losses: 15, draws: 15 },
-  { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 2414, age: 20, wins: 48, losses: 40, draws: 12 },
-  { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 2576, age: 20, wins: 2, losses: 3, draws: 0 },
-  { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 2521, age: 18, wins: 35, losses: 25, draws: 15 },
-  { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 2487, age: 15, wins: 10, losses: 5, draws: 5 }
+      "AF": "Afghanistan", "AL": "Albania", "DZ": "Algeria", "AS": "American Samoa", 
+      "AD": "Andorra", "AO": "Angola", "AI": "Anguilla", "AQ": "Antarctica", 
+      "AG": "Antigua and Barbuda", "AR": "Argentina", "AM": "Armenia", "AW": "Aruba", 
+      "AU": "Australia", "AT": "Austria", "AZ": "Azerbaijan", "BS": "Bahamas", 
+      "BH": "Bahrain", "BD": "Bangladesh", "BB": "Barbados", "BY": "Belarus", 
+      "BE": "Belgium", "BZ": "Belize", "BJ": "Benin", "BM": "Bermuda", 
+      "BT": "Bhutan", "BO": "Bolivia", "BQ": "Bonaire, Sint Eustatius and Saba", 
+      "BA": "Bosnia and Herzegovina", "BW": "Botswana", "BV": "Bouvet Island", 
+      "BR": "Brazil", "IO": "British Indian Ocean Territory", "BN": "Brunei", 
+      "BG": "Bulgaria", "BF": "Burkina Faso", "BI": "Burundi", "CV": "Cabo Verde", 
+      "KH": "Cambodia", "CM": "Cameroon", "CA": "Canada", "KY": "Cayman Islands", 
+      "CF": "Central African Republic", "TD": "Chad", "CL": "Chile", "CN": "China", 
+      "CX": "Christmas Island", "CC": "Cocos (Keeling) Islands", "CO": "Colombia", 
+      "KM": "Comoros", "CD": "Congo, Democratic Republic of the", "CG": "Congo", 
+      "CK": "Cook Islands", "CR": "Costa Rica", "HR": "Croatia", "CU": "Cuba", 
+      "CW": "Curaçao", "CY": "Cyprus", "CZ": "Czech Republic", "DK": "Denmark", 
+      "DJ": "Djibouti", "DM": "Dominica", "DO": "Dominican Republic", "EC": "Ecuador", 
+      "EG": "Egypt", "SV": "El Salvador", "GQ": "Equatorial Guinea", "ER": "Eritrea", 
+      "EE": "Estonia", "SZ": "Eswatini", "ET": "Ethiopia", "FK": "Falkland Islands", 
+      "FO": "Faroe Islands", "FJ": "Fiji", "FI": "Finland", "FR": "France", 
+      "GF": "French Guiana", "PF": "French Polynesia", "TF": "French Southern Territories", 
+      "GA": "Gabon", "GM": "Gambia", "GE": "Georgia", "DE": "Germany", 
+      "GH": "Ghana", "GI": "Gibraltar", "GR": "Greece", "GL": "Greenland", 
+      "GD": "Grenada", "GP": "Guadeloupe", "GU": "Guam", "GT": "Guatemala", 
+      "GG": "Guernsey", "GN": "Guinea", "GW": "Guinea-Bissau", "GY": "Guyana", 
+      "HT": "Haiti", "HM": "Heard Island and McDonald Islands", "VA": "Holy See", 
+      "HN": "Honduras", "HK": "Hong Kong", "HU": "Hungary", "IS": "Iceland", 
+      "IN": "India", "ID": "Indonesia", "IR": "Iran", "IQ": "Iraq", 
+      "IE": "Ireland", "IM": "Isle of Man", "IL": "Israel", "IT": "Italy", 
+      "JM": "Jamaica", "JE": "Jersey", "JP": "Japan", "KE": "Kenya", 
+      "KI": "Kiribati", "KP": "Korea, North", "KR": "Korea, South", 
+      "KW": "Kuwait", "KG": "Kyrgyzstan", "LA": "Laos", "LV": "Latvia", 
+      "LB": "Lebanon", "LS": "Lesotho", "LR": "Liberia", "LY": "Libya", 
+      "LI": "Liechtenstein", "LT": "Lithuania", "LU": "Luxembourg", 
+      "MO": "Macao", "MG": "Madagascar", "MW": "Malawi", "MY": "Malaysia", 
+      "MV": "Maldives", "ML": "Mali", "MT": "Malta", "MH": "Marshall Islands", 
+      "MQ": "Martinique", "MR": "Mauritania", "MU": "Mauritius", "YT": "Mayotte", 
+      "MX": "Mexico", "FM": "Micronesia", "MD": "Moldova", "MC": "Monaco", 
+      "MN": "Mongolia", "MT": "Montenegro", "MS": "Montserrat", "MA": "Morocco", 
+      "MZ": "Mozambique", "MM": "Myanmar", "NA": "Namibia", "NR": "Nauru", 
+      "NP": "Nepal", "NL": "Netherlands", "NZ": "New Zealand", "NI": "Nicaragua", 
+      "NE": "Niger", "NG": "Nigeria", "NU": "Niue", "NF": "Norfolk Island", 
+      "KP": "North Korea", "MP": "Northern Mariana Islands", "NO": "Norway", 
+      "OM": "Oman", "PK": "Pakistan", "PW": "Palau", "PS": "Palestine, State of", 
+      "PA": "Panama", "PG": "Papua New Guinea", "PY": "Paraguay", "PE": "Peru", 
+      "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PT": "Portugal", 
+      "PR": "Puerto Rico", "QA": "Qatar", "RE": "Réunion", "RO": "Romania", 
+      "RU": "Russia", "RW": "Rwanda", "BL": "Saint Barthélemy", "SH": "Saint Helena", 
+      "KNA": "Saint Kitts and Nevis", "LC": "Saint Lucia", "MF": "Saint Martin", 
+      "SX": "Saint Maarten", "SG": "Singapore", "SK": "Slovakia", "SI": "Slovenia", 
+      "SB": "Solomon Islands", "SO": "Somalia", "ZA": "South Africa", 
+      "GS": "South Georgia and the South Sandwich Islands", "SS": "South Sudan", 
+      "ES": "Spain", "LK": "Sri Lanka", "SD": "Sudan", "SR": "Suriname", 
+      "SJ": "Svalbard and Jan Mayen", "SE": "Sweden", "CH": "Switzerland", 
+      "SY": "Syria", "TW": "Taiwan", "TJ": "Tajikistan", "TZ": "Tanzania", 
+      "TH": "Thailand", "TL": "Timor-Leste", "TG": "Togo", "TK": "Tokelau", 
+      "TO": "Tonga", "TT": "Trinidad and Tobago", "TN": "Tunisia", 
+      "TR": "Turkey", "TM": "Turkmenistan", "TC": "Turks and Caicos Islands", 
+      "TV": "Tuvalu", "UG": "Uganda", "UA": "Ukraine", "AE": "United Arab Emirates", 
+      "GB": "United Kingdom", "US": "United States", "UY": "Uruguay", 
+      "UZ": "Uzbekistan", "VU": "Vanuatu", "VE": "Venezuela", "VN": "Vietnam", 
+      "WF": "Wallis and Futuna", "EH": "Western Sahara", "YE": "Yemen", 
+      "ZM": "Zambia", "ZW": "Zimbabwe"
+    };
 
-];
-  const titleOrder = { 'GM': 1, 'IM': 2, 'NM': 3 };
+    // Player Data
+    const players = [
+      // Grandmasters [GM]
+      { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 6090, losses: 3445, draws: 5477 },
+      { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 5739, losses: 3408, draws: 3634 },
+      { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 17806, losses: 2339, draws: 5970 },
+      { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 22, wins: 1320, losses: 395, draws: 125 },
+      { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 10850, losses: 1308, draws: 4079 },
+      // International Masters [IM]
+      { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 19, wins: 5674, losses: 4213, draws: 3178 },
+      { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2557, age: 22, wins: 6347, losses: 1643, draws: 6123 },
+      { id: 7, name: "Alaric Varga", title: "IM", nationality: "HU", elo: 2574, age: 21, wins: 7583, losses: 2644, draws: 5754 },
+      { id: 8, name: "Finn O’Callaghan", title: "IM", nationality: "IE", elo: 2499, age: 28, wins: 5123, losses: 4813, draws: 4623 },
+      { id: 9, name: "Rafael Monteiro", title: "IM", nationality: "BR", elo: 2526, age: 26, wins: 9831, losses: 2359, draws: 575 },
+      { id: 10, name: "Emil Kovalenko", title: "IM", nationality: "UA", elo: 2530, age: 16, wins: 2363, losses: 2475, draws: 4748 },
+      { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 24, wins: 6354, losses: 7645, draws: 1735 },
+      { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 19, wins: 4859, losses: 2180, draws: 3890 },
+      { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2422, age: 27, wins: 5310, losses: 3631, draws: 4981 },
+      { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2571, age: 17, wins: 2304, losses: 541, draws: 782 },
+      // National Masters [NM]
+      { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 2456, age: 16, wins: 1, losses: 7, draws: 6 },
+      { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 2341, age: 17, wins: 50, losses: 30, draws: 20 },
+      { id: 17, name: "Ivan Stanimirović", title: "NM", nationality: "RS", elo: 2236, age: 18, wins: 45, losses: 25, draws: 15 },
+      { id: 18, name: "Naeem Rahmani", title: "NM", nationality: "PK", elo: 2542, age: 15, wins: 55, losses: 20, draws: 10 },
+      { id: 19, name: "Marcel Fontaine", title: "NM", nationality: "BE", elo: 2431, age: 16, wins: 40, losses: 50, draws: 10 },
+      { id: 20, name: "Zacharias Petrou", title: "NM", nationality: "GR", elo: 2671, age: 17, wins: 5, losses: 5, draws: 0 },
+      { id: 21, name: "Timur Baysangurov", title: "NM", nationality: "KZ", elo: 2346, age: 19, wins: 60, losses: 15, draws: 15 },
+      { id: 22, name: "Felix Himmelsbach", title: "NM", nationality: "AT", elo: 2414, age: 20, wins: 48, losses: 40, draws: 12 },
+      { id: 23, name: "Joaquim Ferrer", title: "NM", nationality: "PT", elo: 2576, age: 20, wins: 2, losses: 3, draws: 0 },
+      { id: 24, name: "Etienne Duval", title: "NM", nationality: "FR", elo: 2521, age: 18, wins: 35, losses: 25, draws: 15 },
+      { id: 25, name: "Omar Al-Zubair", title: "NM", nationality: "SA", elo: 2487, age: 15, wins: 10, losses: 5, draws: 5 }
+    ];
+    const titleOrder = { 'GM': 1, 'IM': 2, 'NM': 3 };
     players.sort((a, b) => {
       if (titleOrder[a.title] !== titleOrder[b.title]) {
         return titleOrder[a.title] - titleOrder[b.title];
@@ -381,73 +550,62 @@
       }
     });
 
+    // Helper to simplify win/loss ratios
     function simplifyRatio(wins, losses) {
-  if (losses === 0) return `${wins}:0`;
-  if (wins === 0) return `0:${losses}`;
+      if (losses === 0) return `${wins}:0`;
+      if (wins === 0) return `0:${losses}`;
 
-  // Find the greatest common divisor (GCD)
-  const gcd = (a, b) => {
-    while (b !== 0) {
-      let temp = b;
-      b = a % b;
-      a = temp;
-    }
-    return a;
-  };
+      const gcd = (a, b) => {
+        while (b !== 0) {
+          let temp = b;
+          b = a % b;
+          a = temp;
+        }
+        return a;
+      };
 
-  // Calculate the ratio divisor
-  let divisor = gcd(wins, losses);
-
-  // If the ratio is still too large, find a common factor to reduce further
-  while ((wins / divisor > 100 || losses / divisor > 100) && divisor < wins && divisor < losses) {
-    divisor++;
-  }
-
-  // Ensure we don't divide by zero
-  divisor = divisor || 1;
-
-  // Calculate simplified values
-  const simplifiedWins = Math.round(wins / divisor);
-  const simplifiedLosses = Math.round(losses / divisor);
-
-  // If still too large, use a proportional approximation
-  if (simplifiedWins > 100 || simplifiedLosses > 100) {
-    const total = wins + losses;
-    const winPercentage = wins / total;
-    const lossPercentage = losses / total;
-
-    // Find the smallest multiplier that gives numbers within a reasonable range
-    let multiplier = 1;
-    while (true) {
-      const w = Math.round(winPercentage * multiplier);
-      const l = Math.round(lossPercentage * multiplier);
-      if (w <= 100 && l <= 100) {
-        return `${w}:${l}`;
+      let divisor = gcd(wins, losses);
+      while ((wins / divisor > 100 || losses / divisor > 100) && divisor < wins && divisor < losses) {
+        divisor++;
       }
-      multiplier++;
-      if (multiplier > 100) break; // Safety check
+      divisor = divisor || 1;
+
+      const simplifiedWins = Math.round(wins / divisor);
+      const simplifiedLosses = Math.round(losses / divisor);
+
+      if (simplifiedWins > 100 || simplifiedLosses > 100) {
+        const total = wins + losses;
+        const winPercentage = wins / total;
+        const lossPercentage = losses / total;
+        let multiplier = 1;
+        while (true) {
+          const w = Math.round(winPercentage * multiplier);
+          const l = Math.round(lossPercentage * multiplier);
+          if (w <= 100 && l <= 100) {
+            return `${w}:${l}`;
+          }
+          multiplier++;
+          if (multiplier > 100) break;
+        }
+      }
+      return `${simplifiedWins}:${simplifiedLosses}`;
     }
-  }
 
-  return `${simplifiedWins}:${simplifiedLosses}`;
-}
-
-
-    // Calculate Performance Gauge
-    function calculatePerformance(wins, losses, draws) {
+    // Calculate performance segments
+    function calculateSegments(wins, losses, draws) {
       const total = wins + losses + draws;
-      if (total === 0) return 50; // Default midpoint
-      const performance = ((wins + (draws * 0.5)) / total) * 100;
-      // Apply sigmoid function to compress extremes
-      const compressed = 100 * (1 / (1 + Math.exp(-0.05*(performance-50))));
-      return Math.min(95, Math.max(5, compressed)); // Keep within 5-95% range
+      return {
+        wins: total ? (wins / total) * 100 : 0,
+        draws: total ? (draws / total) * 100 : 0,
+        losses: total ? (losses / total) * 100 : 0
+      };
     }
 
-    // Create individual player card
+    // Create player card element
     function createPlayerCard(player) {
       const totalGames = player.wins + player.losses + player.draws;
-      const winRate = totalGames > 0 ? 
-        ((player.wins / totalGames) * 100).toFixed(1) : 0;
+      const segments = calculateSegments(player.wins, player.losses, player.draws);
+      const winRate = totalGames > 0 ? ((player.wins / totalGames) * 100).toFixed(1) : 0;
 
       const card = document.createElement('div');
       card.className = 'card';
@@ -459,27 +617,24 @@
         </div>
         <h3>${player.name}</h3>
         <p>Age: ${player.age} • ${countryNames[player.nationality]}</p>
-
         <div class="performance-gauge">
-          <div class="gauge-fill" style="width: ${calculatePerformance(player.wins, player.losses, player.draws)}%"></div>
+          ${player.wins > 0 ? `<div class="gauge-segment gauge-wins" style="width: ${segments.wins}%"></div>` : ''}
+          ${player.draws > 0 ? `<div class="gauge-segment gauge-draws" style="width: ${segments.draws}%"></div>` : ''}
+          ${player.losses > 0 ? `<div class="gauge-segment gauge-losses" style="width: ${segments.losses}%"></div>` : ''}
         </div>
-
         <div class="player-stats">
           <div class="stat-item" style="border-color: #4CAF50">
             <div class="stat-label">Total Games</div>
             <div class="stat-value">${totalGames}</div>
           </div>
-          
           <div class="stat-item" style="border-color: #2196F3">
             <div class="stat-label">Win Rate</div>
             <div class="stat-value">${winRate}%</div>
           </div>
-          
           <div class="stat-item" style="border-color: #FF9800">
             <div class="stat-label">W/L Ratio</div>
             <div class="stat-value">${simplifyRatio(player.wins, player.losses)}</div>
           </div>
-          
           <div class="stat-item" style="border-color: #9C27B0">
             <div class="stat-label">Draw Rate</div>
             <div class="stat-value">${((player.draws/totalGames)*100 || 0).toFixed(1)}%</div>
@@ -489,25 +644,437 @@
       card.addEventListener('click', () => openModal(player));
       return card;
     }
+    const whiteOpenings = {
+  GM: [
+    "Ruy Lopez",
+    "Italian Game",
+    "Queen's Gambit",
+    "English Opening",
+    "King's Indian Attack",
+    "Grünfeld Defence",
+    "Nimzo-Indian Defense",
+    "Catalan Opening",
+    "Tarrasch Defense",
+    "Vienna Game",
+    "Albin Counter-Gambit",
+    "Peter Smejkal Opening",
+    "Royal Game",
+    "Danish Gambit",
+    "Evans Gambit",
+    "Scotch Game",
+    "Benko Gambit",
+    "King's Gambit",
+    "Bishop's Opening",
+    "Giuoco Piano",
+    "Three Knights Game",
+    "Four Knights Game",
+    "Spanish Game",
+    "Fried Liver Attack"
+  ],
+  IM: [
+    "London System",
+    "Reti Opening",
+    "Bird's Opening",
+    "Catalan Opening",
+    "Four Knights Game",
+    "Italian Gambit",
+    "Colle System",
+    "Vienna Game",
+    "Ponziani Opening",
+    "Sicilian Defense",
+    "King's Gambit",
+    "Karpov Opening",
+    "Scotch Gambit",
+    "Sokolsky Opening",
+    "Trompowsky Attack",
+    "Torre Attack",
+    "Dresden Opening",
+    "Hungarian Opening",
+    "Larsen's Opening",
+    "Grob's Attack",
+    "Durkin's Attack",
+    "Orangutan Opening",
+    "Ware Opening",
+    "Center Game",
+    "Portuguese Opening",
+    "Inverted Hungarian",
+    "Napoleon Opening",
+    "Corn Stalk Defense",
+    "Boden-Kieseritzky Gambit",
+    "Mengarini Opening",
+    "Clemenz Opening"
+  ],
+  NM: [
+    "Vienna Game",
+    "Scotch Game",
+    "Ponziani Opening",
+    "Danvers Opening",
+    "King's Gambit",
+    "Two Knights Defense",
+    "Philidor Defense",
+    "Nimzo-Indian Defense",
+    "Stonewall Attack",
+    "English Opening",
+    "King's Indian Defense",
+    "Quasi-Catalan",
+    "Thai Opening",
+    "Sicilian Defense",
+    "Smith-Morra Gambit",
+    "Center Game",
+    "Portuguese Opening",
+    "Inverted Hungarian",
+    "Napoleon Opening",
+    "Corn Stalk Defense",
+    "Clemenz Opening"
+  ]
+};
 
-    // Open modal with more player info
-    function openModal(player) {
-      const modal = document.getElementById('player-modal');
-      const modalBody = document.getElementById('modal-body');
-      modalBody.innerHTML = `
-        <h2>${player.name} (${player.title})</h2>
-        <p><strong>Nationality:</strong>  ${countryNames[player.nationality]} <span class="fi fi-${player.nationality.toLowerCase()} flag"></span></p>
-        <p><strong>Age:</strong> ${player.age}</p>
-        <p><strong>ELO:</strong> ${player.elo}</p>
-        <p><strong>Record:</strong> Wins: ${player.wins}, Losses: ${player.losses}, Draws: ${player.draws}</p>
-        <p><strong>Win Rate:</strong> ${((player.wins / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
-        <p><strong>Draw Rate:</strong> ${((player.draws / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
-        <p><strong>Loss Rate:</strong> ${((player.losses / (player.wins + player.losses + player.draws)) * 100 || 0).toFixed(2)}%</p>
-      `;
-      modal.style.display = 'block';
+const blackOpenings = {
+  GM: [
+    "Sicilian Defense",
+    "French Defense",
+    "Caro-Kann",
+    "Slav Defense",
+    "King's Indian Defense",
+    "Nimzo-Indian Defense",
+    "Grünfeld Defense",
+    "Benoni Defense",
+    "Dutch Defense",
+    "Pirc Defense",
+    "Albin Counter Gambit",
+    "Czech Defense",
+    "Modern Defense",
+    "Scandinavian Defense",
+    "Englund Gambit",
+    "Queen's Gambit Declined",
+    "King's Indian Attack",
+    "Budapest Gambit",
+    "Alekhine's Defense",
+    "Robatsch Defense",
+    "Lasker Defense",
+    "Taimanov Variation",
+    "Dragon Variation"
+  ],
+  IM: [
+    "Scandinavian Defense",
+    "Pirc Defense",
+    "Alekhine's Defense",
+    "Dutch Defense",
+    "Benoni Defense",
+    "King's Indian Defense",
+    "Caro-Kann Defense",
+    "French Defense",
+    "Nimzo-Indian Defense",
+    "Modern Defense",
+    "Moscow Variation",
+    "Tarrasch Defense",
+    "Ruy Lopez",
+    "Benko Gambit",
+    "Chigorin Defense",
+    "Old Indian Defense",
+    "Queen's Indian Defense",
+    "Bogo-Indian Defense",
+    "Blumenfeld Gambit",
+    "Baltic Defense",
+    "St. George Defense",
+    "Grunfeld Defense",
+    "Keres Defense"
+  ],
+  NM: [
+    "Modern Defense",
+    "Nimzowitsch Defense",
+    "Owen's Defense",
+    "St. George Defense",
+    "Englund Gambit",
+    "Sicilian Defense",
+    "Philidor Defense",
+    "Latvian Gambit",
+    "Trompowsky Attack",
+    "Caro-Kann Defense",
+    "London System",
+    "Italian Game",
+    "Scotch Game",
+    "Alekhine's Defense",
+    "Englund Gambit",
+    "Horwitz Defense",
+    "Queen's Knight Defense",
+    "Lemming Defense",
+    "Crab Opening",
+    "Diemer-Duhm Gambit",
+    "Basman's Defense"
+  ]
+};
+
+const preferredColor = ["White", "Black"];
+
+function getOpeningDescription(opening) {
+      const descriptions = {
+        "Ruy Lopez": "The Ruy Lopez is a classic opening that aims for rapid piece development and immediate presence in the center. It is named after the 16th-century Spanish priest and chess player Ruy López de Segura.",
+    "Italian Game": "The Italian Game is characterized by an early attack on the weak f7 square, emphasizing rapid development and tactical opportunities, creating an open and aggressive game.",
+    "Queen's Gambit": "The Queen's Gambit is a strategic opening that sacrifices a pawn for the sake of attaining significant control over the center of the board, opening lines for piece activity.",
+    "English Opening": "The English Opening is a flexible and sophisticated approach where White aims for control of the center with pawns, allowing for varied piece development strategies.",
+    "King's Indian Attack": "The King's Indian Attack is a universal opening system characterized by a calm pawn structure that allows for flexible piece play and strategic king safety.",
+    "Grünfeld Defence": "The Grünfeld Defence invites White to establish a strong pawn center, opposing it by preparing counterthreats with piece placement. It is a hypermodern response that seeks dynamic play.",
+    "Nimzo-Indian Defense": "The Nimzo-Indian Defense focuses on control of the e4 square and strategic development, often leading to rich tactical and positional complexities.",
+    "Catalan Opening": "The Catalan Opening combines ideas from the Queen’s Gambit and the King's Indian Defense, emphasizing long-term pressure on the center and queenside with solid pawn structure.",
+    "Tarrasch Defense": "The Tarrasch Defense is a tactical response to the Queen's Pawn opening, emphasizing piece development while accepting potential weaknesses in pawn structure.",
+    "Vienna Game": "The Vienna Game allows for aggressive development, asserting control over the center with potential for tactical opportunities against Black's position.",
+    "Albin Counter-Gambit": "The Albin Counter-Gambit offers an aggressive counterplay against the Queen's Gambit, sacrificing a pawn to generate rapid piece play and open lines.",
+    "Peter Smejkal Opening": "The Peter Smejkal Opening is an unorthodox choice that seeks to achieve unbalanced and unexpected positions, aiming to catch opponents off guard.",
+    "Royal Game": "The Royal Game denotes classical strategies emphasizing development, central control, and well-coordinated pieces against the opponent's setup.",
+    "Danish Gambit": "The Danish Gambit involves an aggressive pawn sacrifice early on to expedite development and create dynamic tactical opportunities for White.",
+    "Evans Gambit": "The Evans Gambit is an aggressive option in the Italian Game that sacrifices a pawn for increased central control and attacking chances against Black's position.",
+    "Scotch Game": "The Scotch Game emphasizes immediate central action, leading to open positions that often favor quick piece development and tactical skirmishes.",
+
+    "Sicilian Defense": "The Sicilian Defense is one of the most popular and aggressive openings, offering counter-attacking chances while allowing Black to create an asymmetric position.",
+    "French Defense": "The French Defense provides Black with a solid pawn structure while planning counterattacks against White's central pawns, leading to a rich strategic battle.",
+    "Caro-Kann": "The Caro-Kann Defense offers resilience and solidity for Black, focusing on a strong pawn structure and potential for counterplay against White's center.",
+    "Slav Defense": "The Slav Defense is characterized by a solid response to 1.d4, focusing on quick development and maintaining a strong pawn structure to mitigate central control.",
+    "King's Indian Defense": "The King's Indian Defense is a hypermodern opening where Black allows White to occupy the center, preparing for swift counterattacks and tactical play.",
+    "Benoni Defense": "The Benoni Defense is known for its dynamic and aggressive posture, presenting Black with opportunities to disrupt White's plans through tactical counterplay.",
+    "Dutch Defense": "The Dutch Defense is a versatile response to 1.d4, characterized by an ambitious pawn setup. It aims to control the center while fostering a dynamic piece play.",
+    "Pirc Defense": "The Pirc Defense is a hypermodern opening that focuses on flexibility and counterattacking play, encouraging White to overextend in the center.",
+    "Czech Defense": "The Czech Defense is a solid and flexible response that maintains a solid pawn structure while preparing for active piece play.",
+    "Modern Defense": "The Modern Defense allows Black to adopt a hypermodern stance, emphasizing piece development and central control through flexibility rather than immediate pawn occupation.",
+    "Scandinavian Defense": "The Scandinavian Defense confronts White immediately with the pawn push 1...d5, offering chances for quick piece development while challenging the center.",
+    "Englund Gambit": "The Englund Gambit is an unorthodox opening aiming for immediate tactical chances, often catching opponents off guard by sacrificing material for quick development.",
+    
+    // IM openings
+    "London System": "The London System is a solid, strategic setup generally characterized by a dark-square pawn structure, providing great flexibility and ease of play for both sides.",
+    "Reti Opening": "The Reti Opening emphasizes piece play over pawns and often leads to transpositions into various other openings, typifying a hypermodern approach.",
+    "Bird's Opening": "Bird's Opening is an unorthodox and aggressive choice, aiming to control the f4 square early and create a flexible pawn structure.",
+    "Four Knights Game": "The Four Knights Game leads to a balanced and symmetrical position, allowing both sides to develop their pieces with potential tactical and positional play.",
+    "Italian Gambit": "The Italian Gambit seeks quick development and tactical chances by sacrificing material for active piece play.",
+    "Colle System": "The Colle System is a solid opening that aims for a strategic setup while preparing for central pawn breaks.",
+    "Ponziani Opening": "The Ponziani Opening is a tactical choice that seeks quick development and immediate pressure on Black’s position with centralized pieces.",
+    "Karpov Opening": "The Karpov Opening is a flexible system that implies solid piece development while maintaining a solid structure to respond to White's attacks.",
+    "Chigorin Defense": "The Chigorin Defense is a chess opening that arises after 1.d4 d5 2.c4 Nc6. It is known for its unorthodox approach, allowing Black to create dynamic piece play and challenge White's center early in the game.",
+    
+    // NM openings
+    "Nimzowitsch Defense": "The Nimzowitsch Defense focuses on flexible development while challenging White’s pawn structure directly with counterplay.",
+    "Owen's Defense": "Owen's Defense is an unorthodox response to 1.e4, offering a solid yet flexible approach to piece development.",
+    "St. George Defense": "The St. George Defense is an unusual opening that allows Black to fortify control of the central squares with pawns, preparing for dynamic counterattacks.",
+    "Philidor Defense": "The Philidor Defense provides a solid pawn structure for Black and serves to create counterplay against White's central ambitions.",
+    "Latvian Gambit": "The Latvian Gambit is an aggressive line that offers immediate tactical chances for Black upon sacrificing a pawn.",
+    "Trompowsky Attack": "The Trompowsky Attack enables White to develop pieces aggressively while staying flexible with unique pawn structures.",
+
+  "Benko Gambit": "A strategic gambit where Black sacrifices a pawn for long-term positional compensation and active piece play.",
+    "Bishop's Opening": "An ancient opening focusing on rapid development of the bishop to c4, preparing for early central control.",
+    "Giuoco Piano": "Quiet game focusing on solid positional play with gradual development of pieces (Italian for 'quiet game').",
+    "Three Knights Game": "A solid positional approach maintaining symmetry while preparing for central breakthroughs.",
+    "Fried Liver Attack": "Aggressive sacrificial line in the Two Knights Defense targeting f7 weakness.",
+    "Torre Attack": "Queen's Pawn opening system featuring early bishop development to g5, pinning the knight.",
+    "Dresden Opening": "Uncommon system focusing on flank development and flexible pawn structures.",
+    "Hungarian Opening": "Hypermodern approach delaying central pawn moves in favor of piece development.",
+    "Grob's Attack": "Provocative opening aiming to disrupt Black's development with an early g4 pawn thrust.",
+    "Center Game": "Direct central occupation strategy sacrificing pawns for rapid development.",
+    "Portuguese Opening": "Rare system featuring early bishop development combined with queenside castling plans.",
+    "Napoleon Opening": "Unorthodox opening mimicking historical military strategies with aggressive pawn advances.",
+    "Stonewall": "The Stonewall Opening is characterized by pawns creating a solid and resilient formation. It often leads to a closed position, focusing on piece development and control of the center.",
+
+    // New black openings descriptions  
+    "Queen's Gambit Declined": "Classical response to 1.d4 maintaining solid central control while developing pieces harmoniously.",
+    "Budapest Gambit": "Dynamic gambit sacrificing a pawn for active piece play and attacking chances against White's center.",
+    "Alekhine's Defense": "Provocative hypermodern defense inviting White to overextend their center before counterattacking.",
+    "Robatsch Defense": "Modern defensive system focusing on flexible piece development over fixed pawn structures.",
+    "Lasker Defense": "Sophisticated Queen's Gambit variation aiming for endgame advantages through simplification.",
+    "Dragon Variation": "Aggressive Sicilian Defense variation featuring sharp tactical play and fianchettoed bishop.",
+    "Old Indian Defense": "Solid positional defense focusing on restrained central control and gradual development.",
+    "Blumenfeld Gambit": "Countergambit offering a pawn to disrupt White's center and gain queenside space.",
+    "Baltic Defense": "Uncommon Scandinavian Defense variation with early queen development for active counterplay.",
+    "Horwitz Defense": "Rare response to 1.d4 focusing on asymmetrical pawn structures and unbalancing the position.",
+    "Lemming Defense": "Eccentric system with early queen moves aiming to provoke weaknesses in White's camp.",
+    "Basman's Defense": "Unorthodox approach combining elements of the St. George and hypermodern defensive ideas."
+  };
+      return descriptions[opening] || "A well-established opening with proven results.";
     }
 
-    // Filter and Search Functionality
+    // Helper functions for creative extra info
+    function getPreferredOpening(player) {
+  const white = whiteOpenings[player.title][player.id % whiteOpenings[player.title].length];
+  const black = blackOpenings[player.title][player.id % blackOpenings[player.title].length];
+  const prefers = preferredColor[player.id % 2];
+  return { white, black, prefers };
+}
+  
+    
+const bioTemplates = [
+  (p) => `Hailing from ${countryNames[p.nationality]}, ${p.name} has established themself as a ${p.title} with a remarkable ELO of ${p.elo}. Known for ${p.preferredColor === 'White' ? 'aggressive openings' : 'solid defensive structures'}, they continue to impress in international circuits.`,
+  (p) => `With ${p.wins} career victories under their belt, ${p.name} brings a unique blend of ${p.preferredColor === 'White' ? 'positional understanding' : 'tactical precision'} to every game. Their ${p.elo} rating places them among the elite ${p.title}s.`,
+  (p) => `${p.name} is not just a ${p.title}; they are a chess artist, painting wins on the board with an ELO of ${p.elo}. Known for ${p.preferredColor === 'White' ? 'their fierce opening repertoire' : 'their impenetrable defenses'}, they capture the hearts of fans worldwide.`,
+  (p) => `Ranked among the top ${p.title}s globally, ${p.name} boasts an impressive ${p.elo} rating, driven by ${p.preferredColor === 'White' ? 'a desire to seize the initiative' : 'an exceptional ability to counterattack'}. Every match they play is a battle worth watching!`,
+  (p) => `Celebrated for their intuition and sharp instincts, ${p.name} has an impressive ELO of ${p.elo} and has taken down numerous giants in the chess arena. Their ${p.preferredColor === 'White' ? 'dynamic style' : 'methodical approach'} leaves opponents guessing.`,
+  (p) => `${p.name}, the ${p.title} from ${countryNames[p.nationality]}, combines intellect and creativity to achieve an astonishing ${p.elo}. Their games reflect ${p.preferredColor === 'White' ? 'bold strategies that captivate' : 'deep calculations that confound'} their opponents.`,
+  (p) => `As a ${p.title} with a fanbase that spans continents, ${p.name} delights the crowd with their ${p.preferredColor === 'White' ? 'openings that light up the board' : 'tactical defenses that stand strong'}. Their ELO of ${p.elo} is a testament to their hard work and passion.`,
+  (p) => `With a playful spirit and astounding ${p.elo}, ${p.name} stands out in the ${p.title} community. Known for ${p.preferredColor === 'White' ? 'explosive tactics' : 'cautious maneuvers'}, their games are a blend of excitement and strategy.`,
+  (p) => `Having achieved ${p.wins} prestigious wins, ${p.name} is a formidable force in the chess world. Their ${p.elo} rating speaks volumes, while their ${p.preferredColor === 'White' ? 'aggressive style' : 'defensive mastery'} keeps spectators pinned to their seats.`,
+  (p) => `A ${p.title} in every sense, ${p.name} approaches each game with unmatched concentration and a ${p.elo} rating that inspires awe. Whether ${p.preferredColor === 'White' ? 'launching a surprise attack' : 'holding the fort with strategic resilience'}, they leave a mark in every tournament.`,
+  (p) => `From their first chess piece as a child to multiple opponents faced on the battlefield, ${p.name}, a ${p.title} from ${countryNames[p.nationality]}, has seen it all. With an impressive ELO of ${p.elo}, expect the unexpected!`,
+  (p) => `With each match, ${p.name} proves why they are a ${p.title} to watch, boasting an ELO of ${p.elo}. Their ${p.preferredColor === 'White' ? 'innovative openings' : 'solid defenses'} are a master class and an inspiration for aspiring players.`,
+  (p) => `A beacon of chess mastery, ${p.name} combines logic and passion in every game. Their astonishing ${p.elo} ELO is complemented by ${p.preferredColor === 'White' ? 'lightning-fast blitz plays' : 'long-term strategies that unfold brilliantly'}.`,
+  (p) => `With ${p.wins} tournament wins, ${p.name} is paving their way as a legendary ${p.title}. Their strategic brilliance is matched only by their ${p.elo} rating and their flair for ${p.preferredColor === 'White' ? 'surprising openings' : 'crushing defenses'}.`,
+  (p) => `${p.name} embodies the spirit of ${countryNames[p.nationality]}'s chess community. With an ELO of ${p.elo}, they demonstrate that ${p.preferredColor === 'White' ? 'a strong initiative is key to victory' : 'strategic patience can turn the tables effectively'}.`,
+  (p) => `Fuelled by passion for the game, ${p.name} is a ${p.title} with an ELO of ${p.elo}. Loved by fans, they are known for ${p.preferredColor === 'White' ? 'unleashing bold attacks' : 'developing robust defensive setups'}.`,
+  (p) => `${p.name} approaches every match with determination and skill as a ${p.title}. Their ELO of ${p.elo} reveals their journey, marked by ${p.preferredColor === 'White' ? 'fearless plays' : 'careful strategies that outsmart foes'}.`,
+  (p) => `A rising star of ${countryNames[p.nationality]}, ${p.name} has wowed chess enthusiasts as a ${p.title} with a remarkable ELO of ${p.elo}. Their ${p.preferredColor === 'White' ? 'sharp intuition' : 'strategic depth'} captivates both fans and opponents alike.`,
+  (p) => `${p.name}'s ${p.elo} rating reflects countless hours of determination. As a ${p.title}, they exemplify the importance of ${p.preferredColor === 'White' ? 'taking the initiative early' : 'defending fiercely at all times'} in the game.`,
+  (p) => `${p.name} is a ${p.title} who understands that every piece counts. With an impressive ELO of ${p.elo}, they masterfully blend ${p.preferredColor === 'White' ? 'overt aggression' : 'subtle craftiness'} in their playing style.`,
+  (p) => `With an ever-growing fan base, ${p.name}'s presence in the chess community is undeniable. Their ${p.elo} rating and ${p.preferredColor === 'White' ? 'dynamic strategies' : 'resilient defenses'} make them a force to be reckoned with.`,
+  (p) => `A true chess virtuoso, ${p.name} sparks curiosity and respect as a ${p.title}. Their ELO of ${p.elo} reveals a mind that processes every move with ${p.preferredColor === 'White' ? 'confidence and creativity' : 'strategy and patience'}.`,
+  (p) => `Beloved by fans for their sportsmanship, ${p.name} is an extraordinary ${p.title} hailing from ${countryNames[p.nationality]}. Their ELO of ${p.elo} reflects their commitment to excellence and ${p.preferredColor === 'White' ? 'offensive flair' : 'defensive expertise'}.`,
+  (p) => `${p.name} transforms the chessboard into an arena of ideas and strategies as a remarkable ${p.title}. With an ELO of ${p.elo}, they enjoy weaving ${p.preferredColor === 'White' ? 'dynamic attacks' : 'solid setups'} that leave spectators in awe.`,
+  (p) => `A ${p.title} with a heart for the game, ${p.name} makes every move matter. Their ELO of ${p.elo} speaks volumes about their dedication, marked by a style that favors ${p.preferredColor === 'White' ? 'imaginative openings' : 'resilient defenses'}.`,
+  (p) => `${p.name} is not just a ${p.title}; they are a strategist at heart. With a prestigious ELO of ${p.elo}, they exhibit ${p.preferredColor === 'White' ? 'aggressive openings that captivate' : 'consolidated defenses that perplex'} their opponents.`,
+  (p) => `${p.name}, a ${p.title} from ${countryNames[p.nationality]}, has played a key role in elevating chess standards with their remarkable ELO of ${p.elo}. Their unmatched ${p.preferredColor === 'White' ? 'counterplay' : 'defensive strategies'} have won the admiration of spectators.`,
+  (p) => `As one of the leading ${p.title}s, ${p.name} has proven their mettle time and again. With an ELO of ${p.elo}, they employ ${p.preferredColor === 'White' ? 'brilliant tactics' : 'formidable defense techniques'}, making them a thrilling player to follow.`,
+  (p) => `A master of psychological play, ${p.name} astounds both fans and foes alike. This ${p.title} has an impressive ELO of ${p.elo} and is known for ${p.preferredColor === 'White' ? 'provocative attacks' : 'resilient counterworks'}. Every match they play is a suspenseful drama!`,
+  (p) => `${p.name} delivers intense performances filled with suspense and brilliance. As a ${p.title} with an astonishing ELO of ${p.elo}, they are revered for their ${p.preferredColor === 'White' ? 'entrepreneurial plays' : 'solid strategies that withstand pressure'}.}`,
+  (p) => `When ${p.name} enters the tournament as a ${p.title}, they become a beacon of hope for aspiring players. Their stellar ELO of ${p.elo} resonates with their ability to ${p.preferredColor === 'White' ? 'initiate bold tactics' : 'afford robust defenses'}.`,
+  (p) => `As a ${p.title}, ${p.name} has taken the chess world by storm, having attained an impressive ELO of ${p.elo}. Their approach to the game is characterized by ${p.preferredColor === 'White' ? 'offensive maneuvers' : 'defensive artistry'}, leaving their mark on every tournament.`,
+];
+
+function calculateTrend(player) {
+  const trendValue = ((player.elo - 2500) / 50).toFixed(1);
+  return {
+    direction: trendValue >= 0 ? 'trend-up' : 'trend-down',
+    value: Math.abs(trendValue)
+  };
+}
+
+function calculateChampionshipChance(player) {
+  const base = (player.elo - 2000) / 10;
+  return Math.min(Math.max(base, 5), 95).toFixed(1);
+}
+
+
+    // Open modal with extended player info
+    function openModal(player) {
+      const totalGames = player.wins + player.losses + player.draws;
+      const segments = calculateSegments(player.wins, player.losses, player.draws);
+      const modalBody = document.getElementById('modal-body');
+      const openings = getPreferredOpening(player);
+      const eloProgress = (player.elo / 3000) * 100;
+      const trend = calculateTrend(player); // Add this helper function
+
+  const bio = bioTemplates[player.id % bioTemplates.length](player);
+
+      modalBody.innerHTML = `
+        <div class="modal-header">
+          <h2>
+            <span class="fi fi-${player.nationality.toLowerCase()} flag-icon"></span>
+            ${player.name}
+            <span class="player-title ${player.title}">${player.title}</span>
+          </h2>
+          <div class="badge-container">
+            <div class="player-badge">
+              <svg class="badge-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L3 12H6V22H18V12H21L12 2M9 8H11V18H9V8M13 8H15V18H13V8Z"/></svg>
+              #${player.id.toString().padStart(3, '0')}
+            </div>
+        <div class="trend-indicator ${trend.direction}">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            ${trend.direction === 'trend-up' ? '<path d="M16 6L18.29 8.29 13 13.59 9.71 10.29 2 18H22V6"/>' : '<path d="M16 18L18.29 15.71 13 10.41 9.71 13.71 2 6H22V18"/>'}
+          </svg>
+          ${trend.value}%
+        </div>
+            <div class="player-badge">
+              <svg class="badge-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Z"/></svg>
+              ${countryNames[player.nationality]}
+            </div>
+          </div>
+            <div class="player-meta">
+        <span class="prediction-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFD700">
+          <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21 12 17.77 5.82 21 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        ${calculateChampionshipChance(player)}% Title Chance
+      </span>
+    </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card" style="border-color: #4CAF50">
+            <h3>ELO RATING</h3>
+            <div class="value">${player.elo}</div>
+            <div class="performance-gauge" style="margin-top: 1rem">
+              <div class="gauge-segment gauge-wins" style="width: ${(player.elo/3000)*100}%"></div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="border-color: #9C27B0">
+            <h3>WIN RATE</h3>
+            <div class="value">${((player.wins/totalGames)*100 || 0).toFixed(1)}%</div>
+            <div class="performance-gauge" style="margin-top: 1rem">
+              <div class="gauge-segment gauge-wins" style="width: ${segments.wins}%"></div>
+              <div class="gauge-segment gauge-draws" style="width: ${segments.draws}%"></div>
+              <div class="gauge-segment gauge-losses" style="width: ${segments.losses}%"></div>
+            </div>
+          </div>
+
+          <div class="stat-card" style="border-color: #2196F3">
+            <h3>GAMES PLAYED</h3>
+            <div class="value">${totalGames}</div>
+            <div style="margin-top: 0.5rem; color: #888">
+              (${player.wins}W / ${player.losses}L / ${player.draws}D)
+            </div>
+          </div>
+
+          <div class="stat-card" style="border-color: #FF9800">
+            <h3>EFFICIENCY</h3>
+            <div class="value">${((player.wins + (player.draws * 0.5)) / totalGames * 100 || 0).toFixed(1)}%</div>
+            <div style="margin-top: 0.5rem; color: #888">
+              ${simplifyRatio(player.wins, player.losses)} W/L
+            </div>
+          </div>
+
+          <div class="stat-card" style="border-color: #E91E63">
+            <h3>STREAK POTENTIAL</h3>
+            <div class="value">${(player.wins / Math.max(player.losses, 1)).toFixed(1)}x</div>
+            <div style="margin-top: 0.5rem; color: #888">
+              Wins per loss
+            </div>
+          </div>
+
+          <div class="stat-card" style="border-color: #00BCD4">
+            <h3>DRAW RATIO</h3>
+            <div class="value">${((player.draws/totalGames)*100 || 0).toFixed(1)}%</div>
+            <div style="margin-top: 0.5rem; color: #888">
+              ${simplifyRatio(player.draws, player.wins)} D/W
+            </div>
+          </div>
+        </div>
+
+        <div class="additional-info">
+          <h3>Player Biography</h3>
+          <p>${bio}</p>
+          
+          <div class="opening-styles">
+            <h3>Signature Openings</h3>
+            <div class="opening-cards">
+              <div class="opening-card white-opening">
+                <div class="opening-header">
+                  <span class="piece-icon">♚</span>
+                  <h4>White Preference</h4>
+                </div>
+                <div class="opening-name">${openings.white}</div>
+                <p>${getOpeningDescription(openings.white)}</p>
+              </div>
+              
+              <div class="opening-card black-opening">
+                <div class="opening-header">
+                  <span class="piece-icon">♔</span>
+                  <h4>Black Speciality</h4>
+                </div>
+                <div class="opening-name">${openings.black}</div>
+                <p>${getOpeningDescription(openings.black)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('player-modal').style.display = 'flex';
+    }
+
+    // Filter and search functionality
     let currentFilter = 'all';
     let searchQuery = '';
 
@@ -525,7 +1092,7 @@
       });
     });
 
-    // Render players in groups (GM, IM, NM)
+    // Render players grouped by title
     function renderPlayers() {
       const container = document.getElementById('players-container');
       container.innerHTML = '';
@@ -536,14 +1103,12 @@
         return matchesSearch && matchesFilter;
       });
 
-      // Group players by title
       const groups = {};
       filteredPlayers.forEach(player => {
         if (!groups[player.title]) groups[player.title] = [];
         groups[player.title].push(player);
       });
 
-      // Render each group in order: GM, IM, NM
       Object.keys(titleOrder).forEach(title => {
         if (groups[title]) {
           const groupDiv = document.createElement('div');
