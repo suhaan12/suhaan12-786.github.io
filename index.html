@@ -513,8 +513,8 @@
       { id: 1, name: "Hano Kafu", title: "GM", nationality: "JP", elo: 2804, age: 35, wins: 6090, losses: 3445, draws: 5477 },
       { id: 2, name: "Jean-Pascal Cuvier", title: "GM", nationality: "FR", elo: 2757, age: 38, wins: 5739, losses: 3408, draws: 3634 },
       { id: 3, name: "Lucas Moretti", title: "GM", nationality: "ES", elo: 2763, age: 33, wins: 17806, losses: 2339, draws: 5970 },
-      { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 22, wins: 1421, losses: 407, draws: 187 },
-      { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2834, age: 46, wins: 10850, losses: 1308, draws: 4079 },
+      { id: 4, name: "Light Yagami", title: "GM", nationality: "JP", elo: 2791, age: 22, wins: 1320, losses: 395, draws: 125 },
+      { id: 26, name: "Vikram Rao", title: "GM", nationality: "IN", elo: 2840, age: 46, wins: 10850, losses: 1308, draws: 4079 },
       // International Masters [IM]
       { id: 5, name: "Elias Norberg", title: "IM", nationality: "SE", elo: 2439, age: 19, wins: 5674, losses: 4213, draws: 3178 },
       { id: 6, name: "Viktor Dragunov", title: "IM", nationality: "RU", elo: 2557, age: 22, wins: 6347, losses: 1643, draws: 6123 },
@@ -525,7 +525,7 @@
       { id: 11, name: "Hugo Lancaster", title: "IM", nationality: "GB", elo: 2535, age: 24, wins: 6354, losses: 7645, draws: 1735 },
       { id: 12, name: "Chandra Singh", title: "IM", nationality: "IN", elo: 2447, age: 19, wins: 4859, losses: 2180, draws: 3890 },
       { id: 13, name: "Blake Barnes", title: "IM", nationality: "US", elo: 2422, age: 27, wins: 5310, losses: 3631, draws: 4981 },
-      { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2588, age: 17, wins: 2334, losses: 567, draws: 881 },
+      { id: 14, name: "Yan Zacarias Silveira", title: "IM", nationality: "BR", elo: 2571, age: 17, wins: 2304, losses: 541, draws: 782 },
       // National Masters [NM]
       { id: 15, name: "Willem Vries", title: "NM", nationality: "NL", elo: 2456, age: 16, wins: 1, losses: 7, draws: 6 },
       { id: 16, name: "Tobias Falkenberg", title: "NM", nationality: "DE", elo: 2341, age: 17, wins: 50, losses: 30, draws: 20 },
@@ -934,17 +934,70 @@ const bioTemplates = [
 ];
 
 function calculateTrend(player) {
-  const trendValue = ((player.elo - 2500) / 50).toFixed(1);
-  return {
-    direction: trendValue >= 0 ? 'trend-up' : 'trend-down',
-    value: Math.abs(trendValue)
-  };
+    // Define average ELO ratings for each title category
+    const averageEloByTitle = {
+        'GM': 2750,
+        'IM': 2600,
+        'NM': 2400
+    };
+
+    // Get the average ELO for the player's title
+    const averageElo = averageEloByTitle[player.title] || 2500; // Default to 2500 if not found
+
+    // Calculate the trend strength based on the average ELO
+    const trendStrength = ((player.elo - averageElo) / 100).toFixed(1);
+
+    // Use a weighted score that incorporates wins, losses, and draws
+    const totalGames = player.wins + player.losses + player.draws;
+    const winRate = totalGames > 0 ? (player.wins / totalGames) : 0;  // Calculate the win rate
+
+    // Calculate an adjusted trend based on win rate
+    const adjustedTrendScore = (trendStrength * 0.5) + (winRate * 0.5);  // Weighting both factors equally
+    const trendValue = (adjustedTrendScore * 100).toFixed(1); // Scale to percentage
+
+    return {
+        direction: trendValue >= 0 ? 'trend-up' : 'trend-down',
+        value: Math.abs(trendValue)
+    };
 }
 
-function calculateChampionshipChance(player) {
-  const base = (player.elo - 2000) / 10;
-  return Math.min(Math.max(base, 5), 95).toFixed(1);
+function calculateChampionshipChance(player, allPlayers) {
+    // Define championship chance based on ELO and performance metrics
+    const averageELOs = {
+        'GM': 2750,
+        'IM': 2600,
+        'NM': 2400
+    };
+
+    // Base score relative to the player's ELO compared to their title's average ELO
+    const baseScore = (player.elo - averageELOs[player.title]) / 100;
+
+    // Calculate performance metric (adjusted for draws)
+    const totalGames = player.wins + player.losses + player.draws;
+    const adjustedWins = player.wins + (player.draws * 0.5);
+    const performanceMetric = totalGames ? (adjustedWins / totalGames) * 100 : 0;
+
+    // Calculate a score based on relative strength against all other players
+    const relativeStrengths = allPlayers.map(opponent => {
+        if (opponent.id !== player.id) {
+            const strengthDifference = player.elo - opponent.elo;
+            // Influence based on the opponent's performance
+            const opponentPerformance = opponent.wins / Math.max(opponent.wins + opponent.losses, 1);
+            return (strengthDifference + opponentPerformance * 20); // Weight opponent's performance
+        }
+        return 0; // Don't compare to self
+    });
+
+    // Average the relative strengths
+    const averageRelativeStrength = relativeStrengths.reduce((a, b) => a + b, 0) / (relativeStrengths.length || 1);
+
+    // Combine scores into championship chance, giving weight to ELO and performance
+    const championshipChance = baseScore * 0.5 + (performanceMetric * 0.3) + (averageRelativeStrength * 0.2);
+
+    // Normalize to a percentage within reasonable bounds (5 - 95)
+    return Math.min(Math.max(championshipChance + 50, 5), 95).toFixed(1); // Add 50 to shift towards a reasonable range
 }
+
 
 
     // Open modal with extended player info
@@ -955,124 +1008,129 @@ function calculateChampionshipChance(player) {
       const openings = getPreferredOpening(player);
       const eloProgress = (player.elo / 3000) * 100;
       const trend = calculateTrend(player); // Add this helper function
+      const championshipChance = calculateChampionshipChance(player, players);
 
-  const bio = bioTemplates[player.id % bioTemplates.length](player);
+      let titleContext;
+    if (player.title === 'NM') {
+        titleContext = 'chance to become an upcoming IM';
+    } else if (player.title === 'IM') {
+        titleContext = 'chance to become an upcoming GM';
+    } else if (player.title === 'GM') {
+        titleContext = 'chance to win the CAT World Championship';
+    }
+
+      const bio = bioTemplates[player.id % bioTemplates.length](player);
 
       modalBody.innerHTML = `
         <div class="modal-header">
-          <h2>
-            <span class="fi fi-${player.nationality.toLowerCase()} flag-icon"></span>
-            ${player.name}
-            <span class="player-title ${player.title}">${player.title}</span>
-          </h2>
-          <div class="badge-container">
-            <div class="player-badge">
-              <svg class="badge-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L3 12H6V22H18V12H21L12 2M9 8H11V18H9V8M13 8H15V18H13V8Z"/></svg>
-              #${player.id.toString().padStart(3, '0')}
+            <h2>
+                <span class="fi fi-${player.nationality.toLowerCase()} flag-icon"></span>
+                ${player.name}
+                <span class="player-title ${player.title}">${player.title}</span>
+            </h2>
+            <div class="badge-container">
+                <div class="player-badge">
+                    <svg class="badge-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L3 12H6V22H18V12H21L12 2M9 8H11V18H9V8M13 8H15V18H13V8Z"/></svg>
+                    #${player.id.toString().padStart(3, '0')}
+                </div>
+                <div class="trend-indicator ${trend.direction}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        ${trend.direction === 'trend-up' ? '<path d="M16 6L18.29 8.29 13 13.59 9.71 10.29 2 18H22V6"/>' : '<path d="M16 18L18.29 15.71 13 10.41 9.71 13.71 2 6H22V18"/>'}
+                    </svg>
+                    ${trend.value}%
+                </div>
+                <div class="player-badge">
+                    <svg class="badge-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Z"/></svg>
+                    ${countryNames[player.nationality]}
+                </div>
             </div>
-        <div class="trend-indicator ${trend.direction}">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            ${trend.direction === 'trend-up' ? '<path d="M16 6L18.29 8.29 13 13.59 9.71 10.29 2 18H22V6"/>' : '<path d="M16 18L18.29 15.71 13 10.41 9.71 13.71 2 6H22V18"/>'}
-          </svg>
-          ${trend.value}%
-        </div>
-            <div class="player-badge">
-              <svg class="badge-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5.5A3.5 3.5 0 0 1 15.5 9a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8.5 9 3.5 3.5 0 0 1 12 5.5M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Z"/></svg>
-              ${countryNames[player.nationality]}
-            </div>
-          </div>
             <div class="player-meta">
-        <span class="prediction-chip">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFD700">
-          <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21 12 17.77 5.82 21 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
-        ${calculateChampionshipChance(player)}% Title Chance
-      </span>
-    </div>
+                <span class="prediction-chip">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFD700">
+                        <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21 12 17.77 5.82 21 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    ${championshipChance}% ${titleContext}
+                </span>
+            </div>
         </div>
 
         <div class="stats-grid">
-          <div class="stat-card" style="border-color: #4CAF50">
-            <h3>ELO RATING</h3>
-            <div class="value">${player.elo}</div>
-            <div class="performance-gauge" style="margin-top: 1rem">
-              <div class="gauge-segment gauge-wins" style="width: ${(player.elo/3000)*100}%"></div>
+            <div class="stat-card" style="border-color: #4CAF50">
+                <h3>ELO RATING</h3>
+                <div class="value" style="font-size: 69px">${player.elo}</div>
             </div>
-          </div>
 
-          <div class="stat-card" style="border-color: #9C27B0">
-            <h3>WIN RATE</h3>
-            <div class="value">${((player.wins/totalGames)*100 || 0).toFixed(1)}%</div>
-            <div class="performance-gauge" style="margin-top: 1rem">
-              <div class="gauge-segment gauge-wins" style="width: ${segments.wins}%"></div>
-              <div class="gauge-segment gauge-draws" style="width: ${segments.draws}%"></div>
-              <div class="gauge-segment gauge-losses" style="width: ${segments.losses}%"></div>
+            <div class="stat-card" style="border-color: #9C27B0">
+                <h3>WIN RATE</h3>
+                <div class="value" style="font-size: 36px">${((player.wins/totalGames)*100 || 0).toFixed(1)}%</div>
+                <div class="performance-gauge" style="margin-top: 1rem">
+                    <div class="gauge-segment gauge-wins" style="width: ${segments.wins}%"></div>
+                    <div class="gauge-segment gauge-draws" style="width: ${segments.draws}%"></div>
+                    <div class="gauge-segment gauge-losses" style="width: ${segments.losses}%"></div>
+                </div>
             </div>
-          </div>
 
-          <div class="stat-card" style="border-color: #2196F3">
-            <h3>GAMES PLAYED</h3>
-            <div class="value">${totalGames}</div>
-            <div style="margin-top: 0.5rem; color: #888">
-              (${player.wins}W / ${player.losses}L / ${player.draws}D)
+            <div class="stat-card" style="border-color: #2196F3">
+                <h3>GAMES PLAYED</h3>
+                <div class="value" style="font-size: 36px">${totalGames}</div>
+                <div style="margin-top: 0.5rem; color: #888; font-size: 16px">
+                ${player.wins}W / ${player.losses}L / ${player.draws}D
+                </div>
             </div>
-          </div>
 
-          <div class="stat-card" style="border-color: #FF9800">
-            <h3>EFFICIENCY</h3>
-            <div class="value">${((player.wins + (player.draws * 0.5)) / totalGames * 100 || 0).toFixed(1)}%</div>
-            <div style="margin-top: 0.5rem; color: #888">
-              ${simplifyRatio(player.wins, player.losses)} W/L
+            <div class="stat-card" style="border-color: #FF9800">
+                <h3>EFFICIENCY</h3>
+                <div class="value" style="font-size: 36px">${((player.wins + (player.draws * 0.5)) / totalGames * 100 || 0).toFixed(1)}%</div>
+                <div style="margin-top: 0.5rem; color: #888">
+                    ${simplifyRatio(player.wins, player.losses)} W/L
+                </div>
             </div>
-          </div>
 
-          <div class="stat-card" style="border-color: #E91E63">
-            <h3>STREAK POTENTIAL</h3>
-            <div class="value">${(player.wins / Math.max(player.losses, 1)).toFixed(1)}x</div>
-            <div style="margin-top: 0.5rem; color: #888">
-              Wins per loss
+            <div class="stat-card" style="border-color: #E91E63">
+                <h3>STREAK POTENTIAL</h3>
+                <div class="value" style="font-size: 56px">${(player.wins / Math.max(player.losses, 1)).toFixed(1)}x</div>
             </div>
-          </div>
 
-          <div class="stat-card" style="border-color: #00BCD4">
-            <h3>DRAW RATIO</h3>
-            <div class="value">${((player.draws/totalGames)*100 || 0).toFixed(1)}%</div>
-            <div style="margin-top: 0.5rem; color: #888">
-              ${simplifyRatio(player.draws, player.wins)} D/W
+            <div class="stat-card" style="border-color: #00BCD4">
+                <h3>DRAW RATIO</h3>
+                <div class="value" style="font-size: 36px">${((player.draws / totalGames) * 100 || 0).toFixed(1)}%</div>
+                <div style="margin-top: 0.5rem; color: #888">
+                    ${simplifyRatio(player.draws, player.wins)} D/W
+                </div>
             </div>
-          </div>
         </div>
 
         <div class="additional-info">
-          <h3>Player Biography</h3>
-          <p>${bio}</p>
-          
-          <div class="opening-styles">
-            <h3>Signature Openings</h3>
-            <div class="opening-cards">
-              <div class="opening-card white-opening">
-                <div class="opening-header">
-                  <span class="piece-icon">♚</span>
-                  <h4>White Preference</h4>
+            <h3>Player Biography</h3>
+            <p>${bio}</p>
+            
+            <div class="opening-styles">
+                <h3>Signature Openings</h3>
+                <div class="opening-cards">
+                    <div class="opening-card white-opening">
+                        <div class="opening-header">
+                            <span class="piece-icon">♚</span>
+                            <h4>White Preference</h4>
+                        </div>
+                        <div class="opening-name">${openings.white}</div>
+                        <p>${getOpeningDescription(openings.white)}</p>
+                    </div>
+                    
+                    <div class="opening-card black-opening">
+                        <div class="opening-header">
+                            <span class="piece-icon">♔</span>
+                            <h4>Black Speciality</h4>
+                        </div>
+                        <div class="opening-name">${openings.black}</div>
+                        <p>${getOpeningDescription(openings.black)}</p>
+                    </div>
                 </div>
-                <div class="opening-name">${openings.white}</div>
-                <p>${getOpeningDescription(openings.white)}</p>
-              </div>
-              
-              <div class="opening-card black-opening">
-                <div class="opening-header">
-                  <span class="piece-icon">♔</span>
-                  <h4>Black Speciality</h4>
-                </div>
-                <div class="opening-name">${openings.black}</div>
-                <p>${getOpeningDescription(openings.black)}</p>
-              </div>
             </div>
-          </div>
         </div>
-      `;
-      document.getElementById('player-modal').style.display = 'flex';
-    }
+    `;
+    document.getElementById('player-modal').style.display = 'flex';
+}
+
 
     // Filter and search functionality
     let currentFilter = 'all';
